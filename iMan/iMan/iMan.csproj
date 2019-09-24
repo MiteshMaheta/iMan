@@ -12,5 +12,53 @@
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.1.0.555618" />
     <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
+    <PackageReference Include="ImageCropper.Forms" Version="0.1.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="PCLStorage" Version="1.0.2" />
+    <PackageReference Include="Plugin.Fingerprint" Version="1.4.9" />
+    <PackageReference Include="Prism.Plugin.Popups" Version="7.2.0.573" />
+    <PackageReference Include="Prism.Forms" Version="7.2.0.1367" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="SQLite.Net.Async-PCL" Version="3.1.1" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.5.231" />
+    <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
+    <PackageReference Include="Xamarin.Android.Crashlytics" Version="2.9.4.1" />
+    <PackageReference Include="Xamarin.Plugin.FilePicker" Version="2.1.34" />
+    <PackageReference Include="Prism.Unity.Forms" Version="7.2.0.1367" />
+    <PackageReference Include="Rg.Plugins.Popup" Version="1.1.5.188" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pages\" />
+    <Folder Include="Pages\Category\" />
+    <Folder Include="Pages\Item\" />
+    <Folder Include="Pages\Party\" />
+    <Folder Include="Pages\Settings\" />
+    <Folder Include="Pages\Product\" />
+    <Folder Include="Pages\MainPage\" />
+    <Folder Include="Pages\Category\Add\" />
+    <Folder Include="Pages\Item\Add\" />
+    <Folder Include="Pages\Item\Edit\" />
+    <Folder Include="Pages\Party\Add\" />
+    <Folder Include="Pages\Product\Add\" />
+    <Folder Include="Pages\AppMasterPage\" />
+    <Folder Include="Pages\MainPage\Component\" />
+    <Folder Include="Pages\LoginPage\" />
+    <Folder Include="Pages\Product\Details\" />
+    <Folder Include="Pages\Product\Edit\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Pages\Category\Add\CategoryAdd.xaml.cs" />
+    <Compile Remove="Pages\Product\Details\ProductDetailPage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Pages\MainPage\MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Pages\Category\Add\CategoryAdd.xaml" />
+    <EmbeddedResource Remove="Pages\Category\Add\CategoryAdd.xaml" />
+    <EmbeddedResource Remove="Pages\Category\Add\CategoryAdd.xaml" />
   </ItemGroup>
 </Project>
