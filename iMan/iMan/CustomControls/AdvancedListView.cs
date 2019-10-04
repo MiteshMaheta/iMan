@@ -21,7 +21,7 @@ namespace iMan.CustomControls
             //throw new NotImplementedException();
             if (data?.LastOrDefault()?.Id == en?.Id)
             {
-                GetData?.Execute(data.Count); ;
+                GetData?.Execute(data.Count);
             }
         }
 
@@ -39,8 +39,6 @@ namespace iMan.CustomControls
         // Using a DependencyProperty as the backing store for GetData.  This enables animation, styling, binding, etc...
         public static readonly BindableProperty GetDataProperty =
             BindableProperty.Create("GetData", typeof(ICommand), typeof(AdvancedListView), null, BindingMode.TwoWay);
-
-
 
         public int? Position
         {

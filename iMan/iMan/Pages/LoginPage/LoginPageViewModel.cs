@@ -18,16 +18,19 @@ namespace iMan.Pages.ViewModels
         
         public async override void OnNavigatedTo(INavigationParameters parameters)
         {
-            bool result = await setOrUpgradeDatabaseAndKey();
-            if (result)
-            {
-                Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
-                Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
-            }
-            else
-            {
-                await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
-            }
+            await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+
+            //bool result = await setOrUpgradeDatabaseAndKey();
+            //await Task.Delay(3000);
+            //if (result)
+            //{
+            //    Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
+            //    Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
+            //}
+            //else
+            //{
+            //    await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
+            //}
         }
 
         async Task<bool> setOrUpgradeDatabaseAndKey()
@@ -63,6 +66,7 @@ namespace iMan.Pages.ViewModels
             {
                 await App.DbHelper.SaveInfo("imageCompress", bool.TrueString);
             }
+
             return true;
         }
 
@@ -72,7 +76,7 @@ namespace iMan.Pages.ViewModels
             {
                 string res = await App.DbHelper.GetInfo<string>("imageCompress");
                 if (res == bool.TrueString)
-                    await NavigationService.NavigateAsync("/AppMasterPage/NavigationPage/MainPage");
+                    await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
                 else
                 {
                     NavigationParameters parameters = new NavigationParameters();

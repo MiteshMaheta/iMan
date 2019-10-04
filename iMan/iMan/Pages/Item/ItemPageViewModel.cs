@@ -4,6 +4,7 @@ using Prism.Navigation;
 using Prism.Services;
 using iMan.Data;
 using System.Collections.ObjectModel;
+using Xamarin.Forms;
 
 namespace iMan.Pages.ViewModels
 {
@@ -12,26 +13,11 @@ namespace iMan.Pages.ViewModels
         public ItemPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
         {
             Xamarin.Forms.MessagingCenter.Subscribe<Item>(this, "added", OnItemAdded);
-            AddItemCommand = new DelegateCommand(AddItem);
+            AddCommand = new DelegateCommand(AddItem);
+            DeleteCommandWithObject = new DelegateCommand<object>(deleteItem);
         }
 
-        public void OnItemAdded(Item obj)
-        {
-            if (obj != null && category != null)
-            {
-                GetAllItems(category.Id.ToString());
-            }
-        }
-
-        public void AddItem()
-        {
-            NavigationParameters parameters = new NavigationParameters();
-            parameters.Add("Category", category);
-            NavigationService.NavigateAsync("ItemAddPage", parameters, true, false);
-        }
-
-        public DelegateCommand AddItemCommand { get; set; }
-
+        #region Properties
         private ObservableCollection<Item> itemsList;
         public ObservableCollection<Item> ItemsList
         {
@@ -53,18 +39,53 @@ namespace iMan.Pages.ViewModels
             }
         }
 
+        private String TempTitle;
+        public String Title
+        {
+            get { return TempTitle; }
+            set {SetProperty(ref TempTitle, value); }
+        }
+
         Category category;
+        #endregion
+
+        public void OnItemAdded(Item obj)
+        {
+            if (obj != null && category != null)
+            {
+                GetAllItems(category.Id.ToString());
+            }
+        }
+
+        public void AddItem()
+        {
+            NavigationParameters parameters = new NavigationParameters();
+            parameters.Add("Category", category);
+            NavigationService.NavigateAsync("ItemAddPage", parameters);
+        }
+
+        public async void GoToEditPage(Item itemObject)
+        {
+            NavigationParameters parameters = new NavigationParameters();
+            parameters.Add("item", itemObject);
+            await NavigationService.NavigateAsync("ItemEditPage", parameters);
+        }
+
+        async void deleteItem(object obj)
+        {
+            var ItemObject = (Item)obj;
+            bool confirm = await DialogService.DisplayAlertAsync("Item Delete", "Do you want to Delete?", "Delete", "Cancel");
+            if (confirm)
+            {
+                int deleted = await App.DbHelper.DeleteItem(int.Parse(ItemObject.Id));
+                Xamarin.Forms.MessagingCenter.Send<Item>(ItemObject, "added");
+            }
+        }
 
         public async void GetAllItems(string category)
         {
             ItemsList = new ObservableCollection<Item>(await App.DbHelper.GetAllItems(category));
-        }
-
-        public async void GoToEditPage(Item items)
-        {
-            NavigationParameters parameters = new NavigationParameters();
-            parameters.Add("item", items);
-            await NavigationService.NavigateAsync("ItemEditPage", parameters, true, false);
+            if (ItemsList.Count > 0) noData = false; else noData = true;
         }
 
         public override void OnNavigatedTo(INavigationParameters parameters)
@@ -75,6 +96,7 @@ namespace iMan.Pages.ViewModels
                 category = parameters["category"] as Category;
                 if (category != null && category.Id.HasValue)
                 {
+                    Title = category.Name;
                     GetAllItems(category.Id.ToString());
                 }
             }

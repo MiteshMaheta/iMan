@@ -25,7 +25,6 @@
     <PackageReference Include="Xamarin.Android.Crashlytics" Version="2.9.4.1" />
     <PackageReference Include="Xamarin.Plugin.FilePicker" Version="2.1.34" />
     <PackageReference Include="Prism.Unity.Forms" Version="7.2.0.1367" />
-    <PackageReference Include="Rg.Plugins.Popup" Version="1.1.5.188" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\" />
@@ -45,6 +44,7 @@
     <Folder Include="Pages\LoginPage\" />
     <Folder Include="Pages\Product\Details\" />
     <Folder Include="Pages\Product\Edit\" />
+    <Folder Include="CustomControls\Behaviours\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Pages\Category\Add\CategoryAdd.xaml.cs" />

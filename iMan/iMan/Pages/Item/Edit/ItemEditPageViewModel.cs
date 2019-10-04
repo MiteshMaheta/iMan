@@ -11,73 +11,51 @@ namespace iMan.Pages.ViewModels
     {
         public ItemEditPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
         {
-            UnitList = new List<string>() { "kg", "grams", "gross", "piece", "dozen" };
+            UnitList = new List<string>() { "Kg", "Grams", "Gross", "Piece", "Dozen" };
             SaveCommand = new DelegateCommand(SaveItemAsync);
-            CancelCommand = new DelegateCommand(Cancel);
         }
 
-        private List<string> unitList;
+        private List<string> TempUnitList;
         public List<string> UnitList
         {
-            get { return unitList; }
-            set { SetProperty(ref unitList, value); }
+            get { return TempUnitList; }
+            set { SetProperty(ref TempUnitList, value); }
         }
 
-        private Item item;
-        public Item Item
+        private Item TempItemObject;
+        public Item ItemObject
         {
-            get { return item; }
-            set { SetProperty(ref item, value); }
+            get { return TempItemObject; }
+            set { SetProperty(ref TempItemObject, value); }
         }
 
         public async void SaveItemAsync()
         {
-            bool confirm = await DialogService.DisplayAlertAsync("Confirm", "Do you want to save?", "Yes", "No");
-            if (confirm)
+            string messages = "";
+            if (string.IsNullOrEmpty(ItemObject.Name))
             {
-                string messages = "";
-                if (string.IsNullOrEmpty(Item.Name))
-                {
-                    messages += "Enter name of the Item.\n";
-                }
-                if (Item.Rate == 0)
-                {
-                    messages += "Enter a valid rate.\n";
-                }
-                if (string.IsNullOrEmpty(Item.Unit))
-                {
-                    messages += "Choose a Unit.";
-                }
-                if (!string.IsNullOrEmpty(messages))
-                {
-                    await DialogService.DisplayAlertAsync("Alert", messages, "Ok");
-                    return;
-                }
-                await App.DbHelper.SaveItem(Item);
-                //await DialogService.DisplayAlertAsync("Success", "Item edited SuccessFully", "Ok");
-                Xamarin.Forms.MessagingCenter.Send<Item>(Item, "added");
-                await NavigationService.GoBackAsync();
+                messages += "Enter name of the Item.\n";
             }
-        }
-
-        public async void Cancel()
-        {
-            bool confirm = await DialogService.DisplayAlertAsync("Confirm", "Do you want to cancel?", "Yes", "No");
-            if (confirm)
+            if (string.IsNullOrEmpty(ItemObject.Unit))
             {
-                await NavigationService.GoBackAsync();
+                messages += "Choose a Unit.";
             }
+            if (!string.IsNullOrEmpty(messages))
+            {
+                await DialogService.DisplayAlertAsync("Alert", messages, "Ok");
+                return;
+            }
+            await App.DbHelper.SaveItem(ItemObject);
+            Xamarin.Forms.MessagingCenter.Send<Item>(ItemObject, "added");
+            await NavigationService.GoBackAsync();
         }
-
-        public DelegateCommand SaveCommand { get; set; }
-        public DelegateCommand CancelCommand { get; set; }
 
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
             base.OnNavigatedTo(parameters);
             if (parameters.ContainsKey("item"))
             {
-                Item = parameters["item"] as Item;
+                ItemObject = parameters["item"] as Item;
             }
         }
     }

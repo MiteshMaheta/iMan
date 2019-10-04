@@ -21,7 +21,7 @@ namespace iMan.Pages.ViewModels
         public DelegateCommand OnImageTapped { get; set; }
         public DelegateCommand ShareImage { get; set; }
         public DelegateCommand EditProduct { get; set; }
-        public DelegateCommand DeleteCommand { get; set; }
+        //public DelegateCommand DeleteCommand { get; set; }
 
         private bool isFull;
         public bool IsFull
@@ -77,7 +77,7 @@ namespace iMan.Pages.ViewModels
 
         public async void Delete()
         {
-            bool res = await DialogService.DisplayAlertAsync("Alert", "Are you sure you want to delete?", "Yes", "No");
+            bool res = await DialogService.DisplayAlertAsync("Confirm", "Do you want to Delete?", "Delete", "Cancel");
             if (res)
             {
                 int deleted = await App.DbHelper.DeleteProduct(int.Parse(Product.Id));

@@ -62,8 +62,7 @@ namespace iMan
             containerRegistry.RegisterForNavigation<ItemEditPage>();
 
             containerRegistry.RegisterForNavigation<CategoryPage>();
-            containerRegistry.RegisterForNavigation<CategoryAddPage>();
-
+            
             containerRegistry.RegisterForNavigation<PartyPage>();
             containerRegistry.RegisterForNavigation<PartyAddPage>();
 

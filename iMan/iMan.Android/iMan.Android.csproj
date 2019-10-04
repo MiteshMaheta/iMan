@@ -103,9 +103,6 @@
     <PackageReference Include="Plugin.Fingerprint">
       <Version>1.4.9</Version>
     </PackageReference>
-    <PackageReference Include="Rg.Plugins.Popup">
-      <Version>1.1.5.188</Version>
-    </PackageReference>
     <PackageReference Include="Plugin.CurrentActivity">
       <Version>2.1.0.4</Version>
     </PackageReference>
@@ -136,6 +133,8 @@
     <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="Helpers\ShareHelper.cs" />
     <Compile Include="Helpers\SqliteHelper.cs" />
+    <Compile Include="Helpers\DroidKeyboardHelper.cs" />
+    <Compile Include="MainApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -176,6 +175,14 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\remove.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\xml\file_paths.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\forward.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

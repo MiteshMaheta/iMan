@@ -3,29 +3,22 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:Behaviour="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" x:Name="pieceAdd" Title="Add Product">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Command="{Binding SaveCommand}"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
-            <AbsoluteLayout HorizontalOptions="FillAndExpand">
-            <!--<ScrollView>-->
-            <StackLayout Style="{DynamicResource StackBlack}" Orientation="Horizontal" VerticalOptions="StartAndExpand" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-                <Button Text="Cancel" Command="{Binding CancelCommand}" Style="{DynamicResource SelectedTab}" HorizontalOptions="StartAndExpand"/>
-                <Label Text="Add Product" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
-                <Button Text="Save" Command="{Binding SaveCommand}" Style="{DynamicResource SelectedTab}" HorizontalOptions="EndAndExpand"/>
-            </StackLayout>
-            <StackLayout BindingContext="{Binding Product}" Margin="10,60,10,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="5">
-                    <Image Source="{Binding BindingContext.Image,Mode=TwoWay,Source={x:Reference Name=pieceAdd}}" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="30"  HeightRequest="30">
+        <AbsoluteLayout HorizontalOptions="FillAndExpand">
+            <StackLayout BindingContext="{Binding Product}" Margin="5,0,5,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
+                <Picker FontAttributes="Bold" Title="Category" ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding BindingContext.CategoryList,Source={x:Reference Name=pieceAdd}}"
+                        SelectedItem="{Binding BindingContext.SelectedCategory,Source={x:Reference Name=pieceAdd}}" FontSize="Medium" HorizontalOptions="FillAndExpand"/>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <Image Source="{Binding BindingContext.Image,Mode=TwoWay,Source={x:Reference Name=pieceAdd}}" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="50"  HeightRequest="50">
                         <Image.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=pieceAdd}}"/>
                         </Image.GestureRecognizers>
                     </Image>
-                    <Entry Margin="10,0,0,0" Text="{Binding Name}" Placeholder="Name" HorizontalOptions="FillAndExpand"/>
+                    <Entry Margin="10,0,0,0" Text="{Binding Name}" Placeholder="Name" HorizontalOptions="FillAndExpand" x:Name="itemName"/>
                 </StackLayout>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Category: " HeightRequest="30" VerticalTextAlignment="Center"/>
-                    <Picker ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding BindingContext.CategoryList,Source={x:Reference Name=pieceAdd}}"
-                        SelectedItem="{Binding BindingContext.SelectedCategory,Source={x:Reference Name=pieceAdd}}" FontSize="Medium" HorizontalOptions="FillAndExpand"/>
-                </StackLayout>
-
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                     <Label Text="% Profit: " VerticalTextAlignment="Center"/>
                     <Entry Text="{Binding ProfitPercent}" Keyboard="Numeric" WidthRequest="100"/>
@@ -42,7 +35,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="25"/>
                                 </Grid.RowDefinitions>
                                 <Label Text="Type" VerticalTextAlignment="Center" FontSize="Micro"/>
                                 <Label Text="Quantity" Grid.Column="1" Margin="5,0,0,0" HorizontalOptions="FillAndExpand" VerticalTextAlignment="Center" FontSize="Micro"/>
@@ -72,7 +65,7 @@
                                                 <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=pieceAdd}}" EventName="TextChanged" CommandParameter="NewTextValue"/>
                                             </Entry.Behaviors>
                                         </Entry>
-                                        <Image Source="remove.png" Grid.Column="4" WidthRequest="20" >
+                                        <Image Source="remove.png" Grid.Column="4" WidthRequest="20" BackgroundColor="#2196F3" >
                                             <Image.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding BindingContext.RemoveItemCommand, Source={x:Reference Name=pieceAdd}}" CommandParameter="{Binding .}"/>
                                             </Image.GestureRecognizers>
@@ -92,7 +85,6 @@
                     <Label Text="{Binding SellingPrice}" WidthRequest="50" Margin="0,0,0,5"/>
                 </StackLayout>
             </StackLayout>
-            <!--</ScrollView>-->
             <Image Source="{Binding Image}" IsVisible="{Binding BindingContext.IsFull,Source={x:Reference Name=pieceAdd}}" Aspect="AspectFit" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1" AbsoluteLayout.LayoutFlags="PositionProportional">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=pieceAdd}}"/>
