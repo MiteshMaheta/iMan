@@ -25,7 +25,7 @@ namespace iMan.Pages.ViewModels
             //ShareImage = new DelegateCommand(Share);
             Image = "addimage.png";
             Product = new Product();
-            UnitList = new List<string>() { "kg", "grams", "gross", "piece" };
+            UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveProduct);
             CancelCommand = new DelegateCommand(Cancel);
             Width = Hieght = 30;
@@ -69,21 +69,21 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref itemList, value); }
         }
 
-        private List<Category> categoryList;
+        private List<Category> TempCategoryList;
         public List<Category> CategoryList
         {
-            get { return categoryList; }
-            set { SetProperty(ref categoryList, value); }
+            get { return TempCategoryList; }
+            set { SetProperty(ref TempCategoryList, value); }
         }
 
-        private Category selectedCategory;
+        private Category TempSelectedCategory;
         public Category SelectedCategory
         {
-            get { return selectedCategory; }
+            get { return TempSelectedCategory; }
             set
             {
-                SetProperty(ref selectedCategory, value);
-                OnCategoryChanged(selectedCategory);
+                SetProperty(ref TempSelectedCategory, value);
+                OnCategoryChanged(TempSelectedCategory);
             }
         }
 
@@ -168,23 +168,18 @@ namespace iMan.Pages.ViewModels
                 await DialogService.DisplayAlertAsync("Alert", messages, "Ok");
                 return;
             }
-
-            bool confirm = await DialogService.DisplayAlertAsync("Confirm", "Do you want to save?", "Yes", "No");
-            if (confirm)
+            int add = await App.DbHelper.SaveProduct(Product);
+            foreach (var item in Product.ItemsUsed)
             {
-                int add = await App.DbHelper.SaveProduct(Product);
-                foreach (var item in Product.ItemsUsed)
+                if (item.Quantity > 0)
                 {
-                    if (item.Quantity > 0)
-                    {
-                        item.ProductId = Product.Id;
-                        await App.DbHelper.SaveItemUsed(item);
-                    }
+                    item.ProductId = Product.Id;
+                    await App.DbHelper.SaveItemUsed(item);
                 }
-                await DialogService.DisplayAlertAsync("Success", "Product added Successfully", "Ok");
-                Xamarin.Forms.MessagingCenter.Send<Product>(Product, "added");
-                await NavigationService.GoBackAsync();
             }
+            Xamarin.Forms.MessagingCenter.Send<Product>(Product, "added");
+            await NavigationService.GoBackAsync();
+
         }
 
         public async void Cancel()
@@ -230,26 +225,34 @@ namespace iMan.Pages.ViewModels
         {
             base.OnNavigatedTo(parameters);
             CategoryList = await App.DbHelper.GetAllCategory();
+            string categoryId = parameters["categoryId"] as String;
+            SelectedCategory = CategoryList.Find(e => e.Id.Equals(int.Parse(categoryId)));
         }
 
         public async void OnCategoryChanged(Category category)
         {
             if (category != null)
             {
-                Product.Category = category.Name;
+                Product.Category = category.Id.ToString();
                 ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id.ToString()));
                 if (ItemList != null && ItemList.Count > 0)
                 {
-                    for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)
-                    {
-                        Product.ItemsUsed.RemoveAt(i);
-                    }
+                    removeOldItems();
 
                     foreach (Item item in ItemList)
                     {
                         Product.ItemsUsed.Add(new ItemUsed() { ItemSelected = item });
                     }
                 }
+                else removeOldItems();
+            }
+        }
+
+        void removeOldItems()
+        {
+            for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)
+            {
+                Product.ItemsUsed.RemoveAt(i);
             }
         }
     }

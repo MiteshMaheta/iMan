@@ -1,20 +1,43 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.ItemPage"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iMan.Pages.Views.ItemPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True" Title="Items">
-   <ContentPage.ToolbarItems>
-        <ToolbarItem Text="+" Command="{Binding AddItemCommand}"/>
+             prism:ViewModelLocator.AutowireViewModel="True"
+             Title="{Binding Title}" x:Name="itemPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+"
+                     Command="{Binding AddCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <ListView ItemsSource="{Binding ItemsList}" HasUnevenRows="True"  SelectedItem="{Binding Item,Mode=TwoWay}" Margin="10">
+            <Label Text="Add Item using + button on top right."
+                   IsVisible="{Binding noData}"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="CenterAndExpand"
+                   FontSize="Title"
+                   LineBreakMode="WordWrap"></Label>
+            <ListView ItemsSource="{Binding ItemsList}"
+                      HasUnevenRows="True"
+                      SelectedItem="{Binding Item,Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout BindingContext="{Binding .}" Margin="10">
-                                <Label Text="{Binding Name}"/>
-                                <Label Text="{Binding Rate,StringFormat='{0:c}'}"/>
-                                <Label Text="{Binding Unit,Mode=TwoWay}"/>
+                            <ViewCell.ContextActions>
+                                <MenuItem Command="{Binding BindingContext.DeleteCommandWithObject,Source={x:Reference Name=itemPage}}"
+                                          CommandParameter="{Binding .}"
+                                          Text="Delete"/>
+                            </ViewCell.ContextActions>
+                            <StackLayout BindingContext="{Binding .}"
+                                         Margin="10">
+                                <Label Text="{Binding Name}"
+                                       HorizontalOptions="StartAndExpand" />
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="{Binding Rate,StringFormat='{0:c}'}"
+                                           HorizontalOptions="StartAndExpand" />
+                                    <Label Text="{Binding Unit,Mode=TwoWay}"
+                                           HorizontalOptions="End" />
+                                </StackLayout>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

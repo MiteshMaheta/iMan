@@ -48,7 +48,9 @@ namespace iMan.Droid.Helpers
                         using (var newFile = new Java.IO.File(path + imageArray))
                         {
                             newFile.CreateNewFile();
-                            await System.IO.File.WriteAllBytesAsync(newFile.Path,byteArray);
+                            // TODO : Update visual studio and enable async method to write new file.
+                            //await System.IO.File.WriteAllBytesAsync(newFile.Path,byteArray);
+                            System.IO.File.WriteAllBytes(newFile.Path, byteArray);
                         }
                     }
                     return imageArray;

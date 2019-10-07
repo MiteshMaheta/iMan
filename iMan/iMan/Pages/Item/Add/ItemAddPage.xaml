@@ -1,21 +1,29 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.ItemAddPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True" x:Name="itemAdd" Title="Add Item">
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:behaviour="clr-namespace:iMan.CustomControls.Behaviours"
+             x:Name="itemAdd" Title="Add Item">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Command="{Binding SaveCommand}"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <StackLayout  Orientation="Horizontal">
-                <Button Text="Cancel" Command="{Binding CancelCommand}"  HorizontalOptions="StartAndExpand"/>
-                <Label Text="Add Item" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
-                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="EndAndExpand"/>
-            </StackLayout>
             <StackLayout BindingContext="{Binding Item}" Margin="10,10,0,0">
                 <Label Text="Name"/>
-                <Entry x:Name="itemName" Text="{Binding Name}" />
+                <Entry x:Name="itemName" Text="{Binding Name}" ReturnType="Next">
+                    <Entry.Behaviors>
+                        <behaviour:NextEntryBehavior NextEntry="{x:Reference rateEntry}" />
+                    </Entry.Behaviors>
+                </Entry>
                 <Label Text="Rate"/>
-                <Entry Text="{Binding Rate}" Keyboard="Numeric"/>
+                <Entry x:Name="rateEntry" Text="{Binding Rate}" Keyboard="Numeric" ReturnType="Next">
+                    <Entry.Behaviors>
+                        <behaviour:NextEntryBehavior NextEntry="{x:Reference unitPicker}" />
+                    </Entry.Behaviors>
+                </Entry>
                 <Label Text="Unit"/>
-                <Picker ItemsSource="{Binding BindingContext.UnitList,Source={x:Reference Name=itemAdd}}" SelectedItem="{Binding Unit}" />
+                <Picker x:Name="unitPicker" ItemsSource="{Binding BindingContext.UnitList,Source={x:Reference Name=itemAdd}}" SelectedItem="{Binding Unit}" />
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

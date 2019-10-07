@@ -12,6 +12,80 @@ namespace iMan.Helpers
 {
     public class DatabaseHelper
     {
+        public async Task ExecuteQuery(string query)
+        {
+            if (App.Connection != null)
+            {
+                try
+                {
+                    await App.Connection.ExecuteScalarAsync<bool>(query);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        public async Task<List<Info<string>>> GetScriptsLoaded(string value = "script")
+        {
+            if (App.Connection != null)
+            {
+                try
+                {
+                    List<Info<string>> info = await App.Connection.QueryAsync<Info<string>>($"select * from info where value = '{value}'");
+                    return info;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            return new List<Info<string>>();
+        }
+
+        public async Task SaveInfo<T>(string key, T value) where T : class
+        {
+            if (App.Connection != null)
+            {
+                try
+                {
+                    string stringVal;
+                    if (typeof(T) != typeof(string))
+                        stringVal = JsonConvert.SerializeObject(value).ToString();
+                    else
+                        stringVal = value.ToString();
+                    await App.Connection.ExecuteAsync("insert into info values (?,?)", key, stringVal);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+        }
+
+        public async Task<T> GetInfo<T>(string key) where T : class
+        {
+            if (App.Connection != null)
+            {
+                List<Info<T>> info = await App.Connection.QueryAsync<Info<T>>($"select * from info where key == '{key}'");
+                if (info != null && info.Count > 0)
+                    return info.FirstOrDefault().value;
+            }
+            return null;
+        }
+
+        public async Task<int> GetTableCount()
+        {
+            if (App.Connection != null)
+            {
+                return await App.Connection.ExecuteScalarAsync<int>("select count(*) from sqlite_master");
+            }
+            else
+                return 0;
+        }
+
         public async Task<List<Product>> GetAllProducts(string category="",int start=0)
         {
             if (App.Connection != null)
@@ -30,16 +104,12 @@ namespace iMan.Helpers
                 }
                 catch (Exception ex)
                 {
-
+                    throw ex;
                 }
             }
             return new List<Product>();
         }
-        /// <summary>
-        /// Saves Product
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns>Newly Created Id</returns>
+        
         public async Task<int> SaveProduct(Product product)
         {
             try
@@ -57,9 +127,21 @@ namespace iMan.Helpers
             }
             catch(Exception ex)
             {
-
+                throw ex;
             }
             return -1;
+        }
+
+        public async Task<int> DeleteProduct(int id)
+        {
+            if (App.Connection != null)
+            {
+                string query = $"delete from product where id = {id}";
+                await App.Connection.ExecuteAsync(query);
+                string itemQuery = $"delete from itemsUsed where productId= {id}";
+                return await App.Connection.ExecuteAsync(itemQuery);
+            }
+            return await Task.FromResult(0);
         }
 
         public async Task<int> SaveItem(Item item)
@@ -127,6 +209,19 @@ namespace iMan.Helpers
             return null;
         }
 
+        public async Task<int> DeleteItem(int itemId)
+        {
+            if (App.Connection != null)
+            {
+                string query = $"delete from itemsUsed where itemId = {itemId}";
+                await App.Connection.ExecuteAsync(query);
+                string itemQuery = $"delete from item where id= {itemId}";
+                return await App.Connection.ExecuteAsync(itemQuery);
+            }
+            return await Task.FromResult(0);
+        }
+
+
         public async Task<int> SaveCategory(Category category)
         {
             try
@@ -140,16 +235,25 @@ namespace iMan.Helpers
             }
             catch (Exception ex)
             {
+                throw ex;
 
             }
             return -1;
         }
 
-        public async Task<List<Category>> GetAllCategory()
+        public async Task<List<Category>> GetAllCategory(String categoryId ="",bool isAscending = true)
         {
             if (App.Connection != null)
             {
                 string query = "select * from category";
+                if (!string.IsNullOrEmpty(categoryId))
+                {
+                    query += $" where id='{categoryId}' ";
+                }
+                if (!isAscending)
+                {
+                    query +=" order by id desc ";
+                }
                 try
                 {
                     List<Category> categories = await App.Connection.QueryAsync<Category>(query);
@@ -162,6 +266,32 @@ namespace iMan.Helpers
                 }
             }
             return null;
+        }
+
+        public async Task<int> DeleteCategory(int categoryId)
+        {
+            if (App.Connection != null)
+            {
+                List<Product> productList = await GetAllProducts(categoryId.ToString());
+
+                List<string> productIds = new List<string>();
+                foreach (var product in productList)
+                {
+                    productIds.Add(product.Id);
+                }
+                
+                string query = $"delete from itemsUsed where productId in ({String.Join(",",productIds)})";
+                await App.Connection.ExecuteAsync(query);
+                string itemQuery = $"delete from item where categoryId= {categoryId}";
+                await App.Connection.ExecuteAsync(itemQuery);
+
+                string productQuery = $"delete from product where category= {categoryId}";
+                await App.Connection.ExecuteAsync(productQuery);
+
+                string categoryQuery = $"delete from category where id= {categoryId}";
+                return await App.Connection.ExecuteAsync(categoryQuery);
+            }
+            return await Task.FromResult(0);
         }
 
         public async Task<int> SaveParty(Party party)
@@ -200,100 +330,6 @@ namespace iMan.Helpers
             return null;
         }
 
-        public async Task ExecuteQuery(string query)
-        {
-            if(App.Connection != null)
-            {
-                try
-                {
-                    await App.Connection.ExecuteScalarAsync<bool>(query);
-                }
-                catch(Exception ex)
-                {
-                    throw ex;
-                }
-            }
-        }
-
-        public async Task<List<Info<string>>> GetScriptsLoaded(string value="script")
-        {
-            if(App.Connection!=null)
-            {
-                try
-                {
-                    List<Info<string>> info = await App.Connection.QueryAsync<Info<string>>($"select * from info where value = '{value}'");
-                    return info;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            return new List<Info<string>>();
-        }
-
-        public async Task SaveInfo<T>(string key,T value) where T:class
-        {
-            if(App.Connection!=null)
-            {
-                try
-                {
-                    string stringVal;
-                    if (typeof(T) != typeof(string))
-                        stringVal = JsonConvert.SerializeObject(value).ToString();
-                    else
-                        stringVal = value.ToString();
-                    await App.Connection.ExecuteAsync("insert into info values (?,?)", key, stringVal);
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-            }
-        }
-
-        public async Task<T> GetInfo<T>(string key) where T:class
-        {
-            if(App.Connection!=null)
-            {
-                List<Info<T>> info = await App.Connection.QueryAsync<Info<T>>($"select * from info where key == '{key}'");
-                if (info != null && info.Count>0)
-                    return info.FirstOrDefault().value;
-            }
-            return null;
-        }
-
-        public async Task<int> GetTableCount()
-        {
-            if (App.Connection != null)
-            {
-                return await App.Connection.ExecuteScalarAsync<int>("select count(*) from sqlite_master");
-            }
-            else
-                return 0;
-        }
-
-        public async Task<List<ItemUsed>> GetAllItemUsed(string productId = "")
-        {
-            if (App.Connection != null)
-            {
-                string query = $"select * from itemsUsed";
-                if (!string.IsNullOrEmpty(productId))
-                    query += $" where productId='{productId}'";
-                try
-                {
-                    List<ItemUsed> res = await App.Connection.QueryAsync<ItemUsed>(query);
-                    //await App.Connection.CloseAsync();
-                    return res;
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-            }
-            return null;
-        }
         public async Task<int> SaveItemUsed(ItemUsed itemUsed)
         {
             try
@@ -316,16 +352,29 @@ namespace iMan.Helpers
             return -1;
         }
 
-        public async Task<int> DeleteProduct(int id)
+        public async Task<List<ItemUsed>> GetAllItemUsed(string productId = "")
         {
             if (App.Connection != null)
             {
-                string query = $"delete from product where id = {id}";
-                await App.Connection.ExecuteAsync(query);
-                string itemQuery = $"delete from itemsUsed where productId= {id}";
-                return await App.Connection.ExecuteAsync(itemQuery);
+                string query = $"select * from itemsUsed";
+                if (!string.IsNullOrEmpty(productId))
+                    query += $" where productId='{productId}'";
+                try
+                {
+                    List<ItemUsed> res = await App.Connection.QueryAsync<ItemUsed>(query);
+                    //await App.Connection.CloseAsync();
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
-            return await Task.FromResult(0);
+            return null;
         }
+
+        
+
+        
     }
 }

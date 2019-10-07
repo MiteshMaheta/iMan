@@ -11,5 +11,10 @@ namespace iMan.Pages.Views
         {
             InitializeComponent();
         }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            itemName.Focus();
+        }
     }
 }

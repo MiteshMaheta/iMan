@@ -1,23 +1,100 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.CategoryPage"
-             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms" 
-             prism:ViewModelLocator.AutowireViewModel="True" x:Name="categoryPage" Title="Categories">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="iMan.Pages.Views.CategoryPage"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Name="categoryPage"
+             Title="Categories">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="+" Command="{Binding AddCategoryCommand}"/>
+        <ToolbarItem Text="+"
+                     Command="{Binding AddCategoryCommand}"
+                     CommandParameter="{x:Reference categoryName}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout>
-            <ListView ItemsSource="{Binding CategoryList}" Margin="10,10,0,0" SelectedItem="{Binding BindingContext.Category,Source={x:Reference Name=categoryPage}}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout BindingContext="{Binding .}">
-                                <Label Text="{Binding Name}" FontSize="Large"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackLayout>
+        <AbsoluteLayout>
+            <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,1"
+                         AbsoluteLayout.LayoutFlags="All">
+                <Label Text="Add Category using + button on top right."
+                       IsVisible="{Binding noData}"
+                       HorizontalTextAlignment="Center"
+                       HorizontalOptions="CenterAndExpand"
+                       FontSize="Title"
+                       LineBreakMode="WordWrap"></Label>
+                <ListView ItemsSource="{Binding CategoryList}"
+                          HasUnevenRows="True"
+                          SelectedItem="{Binding BindingContext.SelectedCategory,Source={x:Reference Name=categoryPage}}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                 <ViewCell.ContextActions>
+                                     <MenuItem Command="{Binding BindingContext.DeleteCommandWithObject,Source={x:Reference Name=categoryPage}}"
+                                          CommandParameter="{Binding .}"
+                                          Text="Delete"/>
+                                </ViewCell.ContextActions>  
+                                <StackLayout BindingContext="{Binding .}"
+                                             Padding="10,5,0,5"
+                                             Orientation="Horizontal">
+                                    <Label Text="{Binding Name}"
+                                           FontSize="Large"
+                                           LineBreakMode="WordWrap"
+                                           VerticalOptions="CenterAndExpand"
+                                           HorizontalOptions="StartAndExpand" />
+                                    <Image Source="forward.png"
+                                           HeightRequest="20"
+                                           WidthRequest="20"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+
+            <StackLayout IsVisible="{Binding BindingContext.IsAddCategory,Source={x:Reference Name=categoryPage}}"
+                         BackgroundColor="Transparent"
+                         AbsoluteLayout.LayoutBounds="1,0,1,1"
+                         AbsoluteLayout.LayoutFlags="All"
+                         Margin="0"
+                         Padding="0">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BindingContext.CancelCommand, Source={x:Reference Name=categoryPage}}"
+                                          NumberOfTapsRequired="1" />
+                </StackLayout.GestureRecognizers>
+            </StackLayout>
+            <Frame IsVisible="{Binding BindingContext.IsAddCategory,Source={x:Reference Name=categoryPage}}"
+                   AbsoluteLayout.LayoutBounds="0.5,0.2,0.8,0.25"
+                   AbsoluteLayout.LayoutFlags="All"
+                   CornerRadius="10"
+                   BorderColor="Accent" Padding="0" IsClippedToBounds="True">
+                <StackLayout>
+                    <StackLayout BackgroundColor="Accent">
+                        <Label Text="Add Category"
+                               HorizontalOptions="CenterAndExpand"
+                               FontSize="Title"
+                               FontAttributes="Bold" TextColor="White" />
+                    </StackLayout>
+                    <StackLayout VerticalOptions="CenterAndExpand" Padding="5,0,5,0">
+                        <Entry Placeholder="Category Name"
+                               x:Name="categoryName"
+                               Text="{Binding CategoryName}" FontSize="Large" />
+                        <Grid ColumnSpacing="8"
+                              VerticalOptions="EndAndExpand">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Text="Cancel"
+                                    Command="{Binding CancelCommand}"
+                                    Grid.Column="0" FontSize="Large" />
+                            <Button Text="Save"
+                                    Command="{Binding SaveCommand}"
+                                    Grid.Column="1" FontSize="Large"/>
+                        </Grid>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

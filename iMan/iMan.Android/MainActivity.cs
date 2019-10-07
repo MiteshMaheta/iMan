@@ -32,7 +32,6 @@ namespace iMan.Droid
 
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.SetVmPolicy(builder.Build());
-            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
             Stormlion.ImageCropper.Droid.Platform.Init();
 
             LoadApplication(new App());
@@ -73,16 +72,5 @@ namespace iMan.Droid
             }
         }
 
-        public override void OnBackPressed()
-        {
-            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
-            {
-
-            }
-            else
-            {
-                base.OnBackPressed();
-            }
-        }
     }
 }
