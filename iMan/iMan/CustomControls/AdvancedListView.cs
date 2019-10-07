@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using iMan.Data;
@@ -8,7 +9,7 @@ namespace iMan.CustomControls
 {
     class AdvancedListView : ListView
     {
-        public AdvancedListView() : base(ListViewCachingStrategy.RecycleElement)
+        public AdvancedListView() : base(ListViewCachingStrategy.RecycleElementAndDataTemplate)
         {
             ItemAppearing += AdvancedListView_ItemAppearing;
             ItemsSource = new ObservableCollection<Cell>();
@@ -17,11 +18,12 @@ namespace iMan.CustomControls
         private void AdvancedListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             Entity en = e.Item as Entity;
-            ObservableCollection<Entity> data = new ObservableCollection<Entity>(ItemsSource.Cast<Entity>());
+            IEnumerable<Entity> list = ItemsSource.Cast<Entity>();
+            int dataCount = list.Count();
             //throw new NotImplementedException();
-            if (data?.LastOrDefault()?.Id == en?.Id)
+            if (list?.LastOrDefault()?.Id == en?.Id)
             {
-                GetData?.Execute(data.Count);
+                GetData?.Execute(dataCount);
             }
         }
 
@@ -39,6 +41,8 @@ namespace iMan.CustomControls
         // Using a DependencyProperty as the backing store for GetData.  This enables animation, styling, binding, etc...
         public static readonly BindableProperty GetDataProperty =
             BindableProperty.Create("GetData", typeof(ICommand), typeof(AdvancedListView), null, BindingMode.TwoWay);
+
+
 
         public int? Position
         {

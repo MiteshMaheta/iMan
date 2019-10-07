@@ -26,7 +26,14 @@ namespace iMan.Pages.ViewModels
 
         }
 
+        private void SearchProduct()
+        {
+            if (string.IsNullOrEmpty(SearchText))
+                SearchProduct(false);
+        }
+
         #region Property
+        public DelegateCommand AddCommand { get; set; }
         public DelegateCommand<object> GetAllProducts { get; set; }
 
         private ObservableCollection<Product> productsList;
@@ -36,7 +43,6 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref productsList, value); }
         }
         bool hasMore;
-
         private Product selectedProduct;
         public Product SelectedProduct
         {
@@ -53,25 +59,11 @@ namespace iMan.Pages.ViewModels
             }
         }
 
-        private Category TempselectedCategory;
-        public Category selectedCategory
-        {
-            get { return TempselectedCategory; }
-            set { SetProperty(ref TempselectedCategory, value); }
-        }
-
         private List<string> categories;
         public List<string> Categories
         {
             get { return categories; }
             set { SetProperty(ref categories, value); }
-        }
-
-        private List<string> TempCategoryIds;
-        public List<string> CategoryIds
-        {
-            get { return TempCategoryIds; }
-            set { SetProperty(ref TempCategoryIds, value); }
         }
 
         private int? position;
@@ -99,7 +91,7 @@ namespace iMan.Pages.ViewModels
                 SetProperty(ref searchText, value);
                 if (string.IsNullOrEmpty(searchText) && tempList != null && tempList.Count > 0)
                 {
-                    ProductsList = tempList;
+                    SearchProduct();
                 }
             }
         }
@@ -111,16 +103,14 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref isFetching, value); }
         }
 
-        private ObservableCollection<Product> tempList;
+        private List<Product> tempList;
         public DelegateCommand SearchProductCommand { get; set; }
 
         #endregion
 
         public async void Add()
         {
-            NavigationParameters parameter = new NavigationParameters();
-            parameter.Add("categoryId", CategoryIds?[Position.Value]);
-            await NavigationService.NavigateAsync("ProductAddPage",parameter);
+            await NavigationService.NavigateAsync("ProductAddPage", null, true, false);
         }
 
         public async void GetAllProduct(object start)
@@ -134,19 +124,18 @@ namespace iMan.Pages.ViewModels
                     if (Categories != null && Categories.Count > 0)
                     {
                         string imgPath = Xamarin.Forms.DependencyService.Get<IImageHelper>().GetCompressImagePath();
-                        List<Product> list = await App.DbHelper.GetAllProducts(CategoryIds?[Position.Value], ProductsList.Count);
+                        List<Product> list = await App.DbHelper.GetAllProducts(Categories?[Position.Value], ProductsList.Count);
                         if (list.Count == 0)
                             hasMore = false;
                         list.ForEach((Product p) =>
                         {
-                            if (!String.IsNullOrEmpty(p.ImgName) && p.ImgName.Split('/').Count() == 1)
+                            if (p.ImgName.Split('/').Count() == 1)
                                 p.ImgName = imgPath + "/" + p.ImgName;
                         });
                         temp.AddRange(list);
                         temp = temp.Distinct().ToList();
-                        ProductsList = new ObservableCollection<Product>(temp);
-                        tempList = ProductsList;
-                        SearchProduct();
+                        tempList = temp;
+                        SearchProduct(false);
                     }
                 }
                 IsFetching = false;
@@ -166,10 +155,17 @@ namespace iMan.Pages.ViewModels
             }
         }
 
-        public void SearchProduct()
+        public void SearchProduct(bool reset)
         {
+            int prevCount = ProductsList.Count;
             if (!string.IsNullOrEmpty(SearchText) && tempList != null && tempList.Count > 0)
                 ProductsList = new ObservableCollection<Product>(tempList?.Where(e => e.Name.ToLower().Contains(SearchText.ToLower())));
+            else
+                ProductsList = new ObservableCollection<Product>(tempList);
+            if (!string.IsNullOrEmpty(SearchText) && (ProductsList.Count == 0 || prevCount == ProductsList.Count))
+                hasMore = false;
+            if (reset)
+                hasMore = true;
         }
 
         public async Task<List<Category>> GetAllCategories()
@@ -184,15 +180,9 @@ namespace iMan.Pages.ViewModels
                 base.OnNavigatedTo(parameters);
                 List<Category> category = await GetAllCategories();
                 if (category != null && category.Count > 0)
-                {
                     Categories = category.Select(e => e.Name).ToList();
-                    CategoryIds = category.Select(e => e.Id.ToString()).ToList();
-                }
                 else
-                {
                     Categories = new List<string>();
-                    CategoryIds = new List<string>();
-                }
                 Position = 0;
             }
             catch (Exception ex)

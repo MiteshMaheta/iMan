@@ -12,7 +12,7 @@ using iMan.Pages.ViewModels;
 
 namespace iMan.Pages.ViewModels
 {
-    public class SettingsPageViewModel: ViewModelBase
+    public class SettingsPageViewModel : ViewModelBase
     {
         public SettingsPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
         {
@@ -86,16 +86,21 @@ namespace iMan.Pages.ViewModels
                 IsBusy = true;
                 List<byte> dataArray = new List<byte>(file.DataArray);
                 //file.DataArray.CopyTo(dataArray, 0);
-                bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray.ToArray());
-                IsBusy = false;
-                if (restore)
-                {
-                    await DialogService.DisplayAlertAsync("Success", "Data restored successfully", "Ok");
-                }
-                else
-                {
-                    await DialogService.DisplayAlertAsync("Alert", "There is some issue in restoring", "Ok");
-                }
+                UnZipDb(dataArray);
+            }
+        }
+
+        public async Task UnZipDb(List<byte> dataArray)
+        {
+            bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray.ToArray());
+            IsBusy = false;
+            if (restore)
+            {
+                await DialogService.DisplayAlertAsync("Success", "Data restored successfully", "Ok");
+            }
+            else
+            {
+                await DialogService.DisplayAlertAsync("Alert", "There is some issue in restoring", "Ok");
             }
         }
 

@@ -33,7 +33,7 @@ namespace iMan.Droid
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.SetVmPolicy(builder.Build());
             Stormlion.ImageCropper.Droid.Platform.Init();
-
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
             LoadApplication(new App());
 
             Fabric.Fabric.With(this, new Crashlytics.Crashlytics());
