@@ -193,8 +193,11 @@ namespace iMan.Data
                 {
                     ItemId = itemSelected.Id;
                     Price = itemSelected.Rate;
-                    if (itemSelected.Unit.Equals("kg") && Unit != "kg")
-                        Unit = "grams";
+                    if (itemSelected.Unit.Equals(ConstantData.GetEnumName(ConstantData.Units.Kg), StringComparison.OrdinalIgnoreCase) &&
+                        Unit != ConstantData.UnitList.Find(e => e.Equals(ConstantData.GetEnumName(ConstantData.Units.Kg), StringComparison.OrdinalIgnoreCase)))
+
+                        Unit = ConstantData.UnitList.Find(e => e.Equals(ConstantData.GetEnumName(ConstantData.Units.Gram), StringComparison.OrdinalIgnoreCase));
+
                     else
                         Unit = itemSelected.Unit;
                     Type = itemSelected.Name;
@@ -216,7 +219,7 @@ namespace iMan.Data
         }
         public double ConversionFactor()
         {
-            if (ItemSelected.Unit.Equals("kg") && Unit.Equals("grams"))
+            if (ItemSelected.Unit.Equals(ConstantData.GetEnumName(ConstantData.Units.Kg),StringComparison.OrdinalIgnoreCase) && Unit.Equals(ConstantData.GetEnumName(ConstantData.Units.Gram), StringComparison.OrdinalIgnoreCase))
             {
                 return 0.001;
             }

@@ -17,7 +17,7 @@ namespace iMan.Pages.ViewModels
             AddNewItem = new DelegateCommand(AddItem);
             AddTotalCommand = new DelegateCommand<object>(AddTotal);
             RemoveItemCommand = new DelegateCommand<ItemUsed>(RemoveItem);
-            UnitList = new List<string>() { "Kg", "Grams", "Gross", "Piece" };
+            UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveProduct);
             CancelCommand = new DelegateCommand(Cancel);
             Width = Hieght = 30;
@@ -94,6 +94,7 @@ namespace iMan.Pages.ViewModels
         public DelegateCommand CancelCommand { get; set; }
 
         #endregion
+
         public void OpenViewer()
         {
             if (string.IsNullOrEmpty(Product.ImgName))

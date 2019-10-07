@@ -25,7 +25,7 @@ namespace iMan.Pages.ViewModels
             //ShareImage = new DelegateCommand(Share);
             Image = "addimage.png";
             Product = new Product();
-            UnitList = new List<string>() { "Kg", "Grams", "Gross", "Piece", "Dozen" };
+            UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveProduct);
             CancelCommand = new DelegateCommand(Cancel);
             Width = Hieght = 30;

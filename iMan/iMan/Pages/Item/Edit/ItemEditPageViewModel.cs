@@ -11,7 +11,7 @@ namespace iMan.Pages.ViewModels
     {
         public ItemEditPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
         {
-            UnitList = new List<string>() { "Kg", "Grams", "Gross", "Piece", "Dozen" };
+            UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveItemAsync);
         }
 

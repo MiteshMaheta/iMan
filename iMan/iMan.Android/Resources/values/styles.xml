@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MainTheme" parent="MainTheme.Base">
     </style>
@@ -20,6 +20,12 @@
          colorControlHighlight and colorSwitchThumbNormal. -->
         <item name="windowActionModeOverlay">true</item>
         <item name="android:datePickerDialogTheme">@style/AppCompatDialogStyle</item>
+        
+        <item name="android:colorPressedHighlight">@color/colorAccent</item>
+        <item name="android:colorLongPressedHighlight">@color/colorAccent</item>
+        <item name="android:colorFocusedHighlight">@color/colorAccent</item>
+        <item name="android:colorActivatedHighlight">@color/colorAccent</item>
+        <item name="android:activatedBackgroundIndicator">@color/colorAccent</item>
     </style>
     <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">#FF4081</item>
