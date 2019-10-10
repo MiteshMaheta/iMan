@@ -116,17 +116,17 @@ namespace iMan.Droid.Helpers
             }
         }
 
-        public async Task<bool> UnzipDb(byte[] zipFile)
+        public async Task<bool> UnzipDb(Stream zipFile)
         {
 
             //Java.IO.File file = new Java.IO.File(zipFile.FilePath);
             //Android.Net.Uri zip = Android.Net.Uri.Parse(Android.Net.Uri.Decode(zipFile.FilePath));
             //if (ContextCompat.CheckSelfPermission(Android.App.Application.Context, Android.Manifest.Permission.ManageDocuments) == (int)Permission.Granted)
             //{
-            byte[] data = zipFile;
+            //byte[] data = zipFile;
             //resolvedPath = Android.App.Application.Context.ApplicationContext.ContentResolver.OpenOutputStream(Android.Net.Uri.Parse(zipFile.FilePath));
-            Stream fileStream = new MemoryStream(data);
-            ZipFile zf = new ZipFile(fileStream);
+            //Stream fileStream = new MemoryStream(data.Skip(0).Take(1000).ToArray());
+            ZipFile zf = new ZipFile(zipFile);
             zf.Password = "backup";
             if (!zf.GetEntry("priceCalculator.sqlite").Name.Equals("priceCalculator.sqlite"))
                 return false;
@@ -152,7 +152,10 @@ namespace iMan.Droid.Helpers
                 }
                 else
                 {
-                    fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(null).Path + "/" + fileName;
+                    if(fileName.Contains('/'))
+                        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(null).Path + "/" + fileName;
+                    else
+                        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).Path + "/" + fileName;
                 }
                 string directoryName = Path.GetDirectoryName(fullZipToPath);
                 if (directoryName.Length > 0 && !Directory.Exists(directoryName))

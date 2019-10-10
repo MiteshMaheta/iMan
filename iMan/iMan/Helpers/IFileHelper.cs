@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Plugin.FilePicker.Abstractions;
@@ -12,7 +13,7 @@ namespace iMan.Helpers
         bool DeleteFile(string fileName);
         bool RenameFile(string oldFilename, string newFileName);
         Task<bool> SaveZipToFolder();
-        Task<bool> UnzipDb(byte[] zipFile);
+        Task<bool> UnzipDb(Stream zipFile);
         //Task AskPermission();
     }
 }

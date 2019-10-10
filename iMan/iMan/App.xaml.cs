@@ -37,8 +37,70 @@ namespace iMan
         protected async override void OnStart()
         {
             base.OnStart();
-            await NavigationService.NavigateAsync("/LoginPage");
+            bool isFirst = true;
+            List<string> sqlFiles = TableInfo.Tables;
+            if (sqlFiles != null && sqlFiles.Count > 0)
+            {
+                List<Info<string>> sqlexecuted = new List<Info<string>>();
+                if (await App.DbHelper.GetTableCount() > 1)
+                {
+                    sqlexecuted = await App.DbHelper.GetScriptsLoaded();
+                    isFirst = false;
+                }
+                foreach (string item in sqlFiles)
+                {
+                    if (sqlexecuted != null && sqlexecuted.Count(e => e.key.Equals(item)) == 0)
+                    {
+                        string file = DependencyService.Get<IFileHelper>().GetFile(item);
+                        if (!string.IsNullOrEmpty(file))
+                        {
+                            List<string> queries = new List<string>(file.Split(';'));
+                            foreach (string query in queries)
+                            {
+                                if (!string.IsNullOrEmpty(query))
+                                {
+                                    await DbHelper.ExecuteQuery(query);
+                                }
+                            }
+                            await DbHelper.SaveInfo(item, "script");
+                        }
+                    }
+                    //await App.Connection.CloseAsync();
+                }
+            }
+            if (isFirst)
+            {
+                await DbHelper.SaveInfo("imageCompress", bool.TrueString);
+            }
+            Authenticate();
+            await NavigationService.NavigateAsync("LoginPage");
+            Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
         }
+
+        public async void Navigate(ActivityResult obj)
+        {
+            if (obj.ResultCode.ToString() == "Ok")
+            {
+                string res = await DbHelper.GetInfo<string>("imageCompress");
+                if (res == bool.TrueString)
+                    await NavigationService.NavigateAsync("//MasterPage/NavigationPage/MainPage");
+                else
+                {
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add("imageCompress", true);
+                    await NavigationService.NavigateAsync("//NavigationPage/UpgradePage", parameters);
+                }
+            }
+            else if (obj.ResultCode.ToString() == "Cancel")
+                Xamarin.Forms.DependencyService.Get<ISystemHelper>().CloseApp();
+        }
+
+        public static void Authenticate()
+        {
+            Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
+        }
+
+
 
         public static void GetConnection()
         {
@@ -67,6 +129,7 @@ namespace iMan
             containerRegistry.RegisterForNavigation<PartyAddPage>();
 
             containerRegistry.RegisterForNavigation<SettingsPage>();
+            containerRegistry.RegisterForNavigation<UpgradePage>();
         }
 
         protected override void OnSleep()

@@ -9,6 +9,7 @@ using Plugin.FilePicker.Abstractions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using iMan.Pages.ViewModels;
+using System.IO;
 
 namespace iMan.Pages.ViewModels
 {
@@ -84,15 +85,27 @@ namespace iMan.Pages.ViewModels
                     return;
                 //await Task.Delay(500);
                 IsBusy = true;
-                List<byte> dataArray = new List<byte>(file.DataArray);
+                byte[] buffer = new byte[4096];
+                byte[] dataArray;
+                //using (MemoryStream ms = new MemoryStream(4096))
+                //{
+                //using (Stream s = file.GetStream())
+                //{
+                //await s.CopyToAsync(ms,4096,);
+                //}
+                //dataArray = ms.ToArray();
+                //}
+                //MemoryStream ms = new MemoryStream();
+
                 //file.DataArray.CopyTo(dataArray, 0);
-                UnZipDb(dataArray);
+                Stream s = file.GetStream();
+                UnZipDb(s);
             }
         }
 
-        public async Task UnZipDb(List<byte> dataArray)
+        public async Task UnZipDb(Stream dataArray)
         {
-            bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray.ToArray());
+            bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray);
             IsBusy = false;
             if (restore)
             {
