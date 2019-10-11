@@ -50,7 +50,7 @@ namespace iMan.CustomControls
                     button.Pressed += (sender, e) =>
                          {
                              int index = tabs.IndexOf(tabs.Where((ex) => ex.Equals(item)).FirstOrDefault());
-                             tab.Position = index.ToString();
+                             tab.Position = index;
                          };
                     stack.Children.Add(button);
                     //stack.Children.Add(line);
@@ -62,14 +62,14 @@ namespace iMan.CustomControls
             }
         }
 
-        public string Position
+        public int Position
         {
-            get { return (string)GetValue(PositionProperty); }
+            get { return (int)GetValue(PositionProperty); }
             set { SetValue(PositionProperty, value); }
         }
 
         public static readonly BindableProperty PositionProperty =
-            BindableProperty.Create("Position", typeof(string), typeof(Tabs), default(string), BindingMode.TwoWay, propertyChanged: OnPositionChanged);
+            BindableProperty.Create("Position", typeof(int), typeof(Tabs), default(int), BindingMode.TwoWay, propertyChanged: OnPositionChanged);
 
         public static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
         {

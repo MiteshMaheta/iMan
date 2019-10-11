@@ -46,12 +46,12 @@ namespace iMan.Data
     [Table("category")]
     public class Category : BindableBase
     {
-        private int? id;
+        private String TempId;
         [Column("id"), PrimaryKey, AutoIncrement]
-        public int? Id
+        public String Id
         {
-            get { return id; }
-            set { SetProperty(ref id, value); }
+            get { return TempId; }
+            set { SetProperty(ref TempId, value); }
         }
 
         private string name;

@@ -13,6 +13,9 @@ using iMan.Data;
 using Com.Theartofdev.Edmodo.Cropper;
 using Plugin.Permissions;
 using iMan.Pages.ViewModels;
+using Android;
+using Android.Support.V4.Content;
+using Android.Support.V4.App;
 
 namespace iMan.Droid
 {

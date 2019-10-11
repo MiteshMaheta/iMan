@@ -128,7 +128,7 @@ namespace iMan.Droid.Helpers
             //Stream fileStream = new MemoryStream(data.Skip(0).Take(1000).ToArray());
             ZipFile zf = new ZipFile(zipFile);
             zf.Password = "backup";
-            if (!zf.GetEntry("priceCalculator.sqlite").Name.Equals("priceCalculator.sqlite"))
+            if (zf.GetEntry("priceCalculator.sqlite") != null && !zf.GetEntry("priceCalculator.sqlite").Name.Equals("priceCalculator.sqlite"))
                 return false;
             if (App.Connection != null)
                 await App.Connection.CloseAsync();

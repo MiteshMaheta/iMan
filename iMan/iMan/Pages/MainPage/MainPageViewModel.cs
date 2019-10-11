@@ -17,7 +17,6 @@ namespace iMan.Pages.ViewModels
         {
             AddCommand = new DelegateCommand(Add);
             Xamarin.Forms.MessagingCenter.Subscribe<Product>(this, "added", OnProductAdded);
-            //Position = 0;
             SearchProductCommand = new DelegateCommand(SearchProduct);
             GetAllProducts = new DelegateCommand<object>(GetAllProduct);
             ProductsList = new ObservableCollection<Product>();
@@ -33,7 +32,6 @@ namespace iMan.Pages.ViewModels
         }
 
         #region Property
-        public DelegateCommand AddCommand { get; set; }
         public DelegateCommand<object> GetAllProducts { get; set; }
 
         private ObservableCollection<Product> productsList;
@@ -59,12 +57,27 @@ namespace iMan.Pages.ViewModels
             }
         }
 
+        private Category TempselectedCategory;
+        public Category selectedCategory
+        {
+            get { return TempselectedCategory; }
+            set { SetProperty(ref TempselectedCategory, value); }
+        }
+
         private List<string> categories;
         public List<string> Categories
         {
             get { return categories; }
             set { SetProperty(ref categories, value); }
         }
+
+        private List<string> TempCategoryIds;
+        public List<string> CategoryIds
+        {
+            get { return TempCategoryIds; }
+            set { SetProperty(ref TempCategoryIds, value); }
+        }
+
 
         private int? position;
         public int? Position
@@ -110,7 +123,9 @@ namespace iMan.Pages.ViewModels
 
         public async void Add()
         {
-            await NavigationService.NavigateAsync("ProductAddPage", null, true, false);
+            NavigationParameters parameter = new NavigationParameters();
+            parameter.Add("categoryId", CategoryIds?[Position.Value]);
+            await NavigationService.NavigateAsync("ProductAddPage", parameter);
         }
 
         public async void GetAllProduct(object start)
@@ -124,12 +139,12 @@ namespace iMan.Pages.ViewModels
                     if (Categories != null && Categories.Count > 0)
                     {
                         string imgPath = Xamarin.Forms.DependencyService.Get<IImageHelper>().GetCompressImagePath();
-                        List<Product> list = await App.DbHelper.GetAllProducts(Categories?[Position.Value], ProductsList.Count);
+                        List<Product> list = await App.DbHelper.GetAllProducts(CategoryIds?[Position.Value], ProductsList.Count);
                         if (list.Count == 0)
                             hasMore = false;
                         list.ForEach((Product p) =>
                         {
-                            if (p.ImgName.Split('/').Count() == 1)
+                            if (!string.IsNullOrEmpty(p.ImgName) && p.ImgName.Split('/').Count() == 1)
                                 p.ImgName = imgPath + "/" + p.ImgName;
                         });
                         temp.AddRange(list);
@@ -180,9 +195,16 @@ namespace iMan.Pages.ViewModels
                 base.OnNavigatedTo(parameters);
                 List<Category> category = await GetAllCategories();
                 if (category != null && category.Count > 0)
+                {
                     Categories = category.Select(e => e.Name).ToList();
+                    CategoryIds = category.Select(e => e.Id.ToString()).ToList();
+                }
                 else
+                {
                     Categories = new List<string>();
+                    CategoryIds = new List<string>();
+                }
+
                 Position = 0;
             }
             catch (Exception ex)

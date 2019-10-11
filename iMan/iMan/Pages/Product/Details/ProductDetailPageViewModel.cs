@@ -72,7 +72,7 @@ namespace iMan.Pages.ViewModels
         {
             NavigationParameters parameters = new NavigationParameters();
             parameters.Add("piece", Product);
-            NavigationService.NavigateAsync("ProductEditPage", parameters, true, false);
+            NavigationService.NavigateAsync("ProductEditPage", parameters);
         }
 
         public async void Delete()

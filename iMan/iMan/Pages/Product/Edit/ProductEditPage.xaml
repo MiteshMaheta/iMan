@@ -3,14 +3,12 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:Behaviour="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" x:Name="pieceEdit" Title="Edit Product">
+     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" Command="{Binding SaveCommand}"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <!--<ScrollView>-->
-            <StackLayout Style="{DynamicResource StackBlack}" Orientation="Horizontal" VerticalOptions="StartAndExpand" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-                <Button Text="Cancel" Command="{Binding CancelCommand}" Style="{DynamicResource SelectedTab}" HorizontalOptions="StartAndExpand"/>
-                <Label Text="Edit Product" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
-                <Button Text="Save" Command="{Binding SaveCommand}" Style="{DynamicResource SelectedTab}" HorizontalOptions="EndAndExpand"/>
-            </StackLayout>
             <StackLayout BindingContext="{Binding Product}" Margin="10,60,10,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
                 <Image Source="{Binding ImgName}" HorizontalOptions="Center" WidthRequest="30"  HeightRequest="30">
                     <Image.GestureRecognizers>

@@ -90,7 +90,6 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref isFull, value); }
         }
 
-        public DelegateCommand SaveCommand { get; set; }
         public DelegateCommand CancelCommand { get; set; }
 
         #endregion
@@ -190,8 +189,8 @@ namespace iMan.Pages.ViewModels
             if (parameters.ContainsKey("piece"))
             {
                 Product = parameters["piece"] as Product;
-                SelectedCategory = CategoryList.FirstOrDefault(e => e.Name.Equals(Product.Category));
-                ItemList = new List<Item>(await App.DbHelper.GetAllItems(SelectedCategory.Id.ToString()));
+                SelectedCategory = CategoryList.FirstOrDefault(e => e.Id.Equals(Product.Category));
+                ItemList = new List<Item>(await App.DbHelper.GetAllItems(SelectedCategory.Id));
                 /*Product.ItemsUsed = JsonConvert.DeserializeObject<ObservableCollection<ItemUsed>>(Product.Items);*/
                 Product.ItemsUsed = new ObservableCollection<ItemUsed>(await App.DbHelper.GetAllItemUsed(Product.Id));
                 foreach (ItemUsed item in Product.ItemsUsed)
@@ -206,20 +205,26 @@ namespace iMan.Pages.ViewModels
         {
             if (category != null && Product.Category != category.Name)
             {
-                ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id.ToString()));
+                ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id));
                 Product.Category = category.Name;
                 if (ItemList != null && ItemList.Count > 0)
                 {
-                    for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)
-                    {
-                        Product.ItemsUsed.RemoveAt(i);
-                    }
+                    removeOldItems();
+
                     foreach (Item item in ItemList)
                     {
                         if (Product.ItemsUsed.Count(e => e.Type.Equals(item.Name)) == 0)
                             Product.ItemsUsed.Add(new ItemUsed() { ItemSelected = item });
                     }
                 }
+                else removeOldItems();
+            }
+        }
+        void removeOldItems()
+        {
+            for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)
+            {
+                Product.ItemsUsed.RemoveAt(i);
             }
         }
     }

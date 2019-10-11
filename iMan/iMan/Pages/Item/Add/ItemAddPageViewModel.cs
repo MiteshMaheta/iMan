@@ -62,9 +62,9 @@ namespace iMan.Pages.ViewModels
             if (parameters.ContainsKey("Category"))
             {
                 Category category = parameters["Category"] as Category;
-                if (category != null && category.Id.HasValue)
+                if (category != null && !string.IsNullOrEmpty(category.Id))
                 {
-                    Item.CategoryId = category.Id.ToString();
+                    Item.CategoryId = category.Id;
                 }
             }
         }

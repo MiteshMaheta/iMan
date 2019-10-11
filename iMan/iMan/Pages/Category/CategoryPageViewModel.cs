@@ -90,7 +90,7 @@ namespace iMan.Pages.ViewModels
             bool confirm = await DialogService.DisplayAlertAsync("Category Delete", "Do you want to Delete?", "Delete", "Cancel");
             if (confirm)
             {
-                int deleted = await App.DbHelper.DeleteCategory(CategoryObject.Id.Value);
+                int deleted = await App.DbHelper.DeleteCategory(int.Parse(CategoryObject.Id));
                 Xamarin.Forms.MessagingCenter.Send<Category>(CategoryObject, "added");
             }
         }
