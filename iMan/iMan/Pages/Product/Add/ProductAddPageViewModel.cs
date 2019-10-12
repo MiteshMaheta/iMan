@@ -27,7 +27,6 @@ namespace iMan.Pages.ViewModels
             Product = new Product();
             UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveProduct);
-            CancelCommand = new DelegateCommand(Cancel);
             Width = Hieght = 30;
             IsFull = false;
         }
@@ -108,9 +107,6 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref isFull, value); }
         }
 
-        public DelegateCommand SaveCommand { get; set; }
-        public DelegateCommand CancelCommand { get; set; }
-
         #endregion
 
         public async void OpenViewer()
@@ -182,15 +178,6 @@ namespace iMan.Pages.ViewModels
 
         }
 
-        public async void Cancel()
-        {
-            bool confirm = await DialogService.DisplayAlertAsync("Confirm", "Do you want to cancel?", "Yes", "No");
-            if (confirm)
-            {
-                await NavigationService.GoBackAsync();
-            }
-        }
-
         public async void AddItem()
         {
             if (!string.IsNullOrEmpty(Product.Category))
@@ -226,15 +213,15 @@ namespace iMan.Pages.ViewModels
             base.OnNavigatedTo(parameters);
             CategoryList = await App.DbHelper.GetAllCategory();
             string categoryId = parameters["categoryId"] as String;
-            SelectedCategory = CategoryList.Find(e => e.Id.Equals(int.Parse(categoryId)));
+            SelectedCategory = CategoryList.Find(e => e.Id.Equals(categoryId));
         }
 
         public async void OnCategoryChanged(Category category)
         {
             if (category != null)
             {
-                Product.Category = category.Id.ToString();
-                ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id.ToString()));
+                Product.Category = category.Id;
+                ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id));
                 if (ItemList != null && ItemList.Count > 0)
                 {
                     removeOldItems();

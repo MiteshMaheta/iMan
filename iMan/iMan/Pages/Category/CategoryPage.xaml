@@ -64,10 +64,8 @@
                 </StackLayout.GestureRecognizers>
             </StackLayout>
             <Frame IsVisible="{Binding BindingContext.IsAddCategory,Source={x:Reference Name=categoryPage}}"
-                   AbsoluteLayout.LayoutBounds="0.5,0.2,0.8,0.25"
-                   AbsoluteLayout.LayoutFlags="All"
                    CornerRadius="10"
-                   BorderColor="Accent" Padding="0" IsClippedToBounds="True">
+                   BorderColor="Accent" Padding="0" IsClippedToBounds="True" Margin="20,50,20,0">
                 <StackLayout>
                     <StackLayout BackgroundColor="Accent">
                         <Label Text="Add Category"
@@ -80,7 +78,7 @@
                                x:Name="categoryName"
                                Text="{Binding CategoryName}" FontSize="Large" />
                         <Grid ColumnSpacing="8"
-                              VerticalOptions="EndAndExpand">
+                              VerticalOptions="EndAndExpand" Margin="0,0,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />

@@ -197,7 +197,7 @@ namespace iMan.Pages.ViewModels
                 if (category != null && category.Count > 0)
                 {
                     Categories = category.Select(e => e.Name).ToList();
-                    CategoryIds = category.Select(e => e.Id.ToString()).ToList();
+                    CategoryIds = category.Select(e => e.Id).ToList();
                 }
                 else
                 {

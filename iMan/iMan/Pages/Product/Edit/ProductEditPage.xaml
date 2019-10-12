@@ -9,7 +9,7 @@
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <!--<ScrollView>-->
-            <StackLayout BindingContext="{Binding Product}" Margin="10,60,10,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
+            <StackLayout BindingContext="{Binding Product}" Margin="5,0,5,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
                 <Image Source="{Binding ImgName}" HorizontalOptions="Center" WidthRequest="30"  HeightRequest="30">
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=pieceEdit}}"/>
