@@ -10,6 +10,7 @@ using Plugin.Permissions.Abstractions;
 using iMan.Droid.Helpers;
 using iMan.Helpers;
 using Xamarin.Forms;
+using Plugin.FilePicker.Abstractions;
 
 [assembly: Dependency(typeof(FileHelper))]
 namespace iMan.Droid.Helpers
@@ -116,20 +117,17 @@ namespace iMan.Droid.Helpers
             }
         }
 
-        public async Task<bool> UnzipDb(Stream zipFile)
+        public async Task<bool> UnzipDb(byte[] zipFile, string fileName)
         {
 
-            //Java.IO.File file = new Java.IO.File(zipFile.FilePath);
-            //Android.Net.Uri zip = Android.Net.Uri.Parse(Android.Net.Uri.Decode(zipFile.FilePath));
-            //if (ContextCompat.CheckSelfPermission(Android.App.Application.Context, Android.Manifest.Permission.ManageDocuments) == (int)Permission.Granted)
-            //{
-            //byte[] data = zipFile;
-            //resolvedPath = Android.App.Application.Context.ApplicationContext.ContentResolver.OpenOutputStream(Android.Net.Uri.Parse(zipFile.FilePath));
-            //Stream fileStream = new MemoryStream(data.Skip(0).Take(1000).ToArray());
-            ZipFile zf = new ZipFile(zipFile);
-            zf.Password = "backup";
-            if (!zf.GetEntry("priceCalculator.sqlite").Name.Equals("priceCalculator.sqlite"))
-                return false;
+            byte[] data = zipFile;
+
+            Stream fileStream = new MemoryStream(data);
+            //ZipFile zf = new ZipFile(zipFile);
+            //zf.Password = "backup";
+            //if (!zf.GetEntry("priceCalculator.sqlite").Name.Equals("priceCalculator.sqlite"))
+            //    return false;
+
             if (App.Connection != null)
                 await App.Connection.CloseAsync();
             List<string> folders = Directory.GetDirectories(CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(null).Path).ToList();
@@ -140,31 +138,31 @@ namespace iMan.Droid.Helpers
                 if (!item.Contains("override"))
                     Directory.Delete(item, true);
             }
-            foreach (ZipEntry item in zf)
-            {
-                string fileName = item.Name;
-                byte[] buffer = new byte[4096];
-                Stream stream = zf.GetInputStream(item);
-                string fullZipToPath = null;
-                if (item.Name.Contains(".sqlite"))
+            //foreach (ZipEntry item in zf)
+            //{
+            //    string fileName = item.Name;
+            byte[] buffer = new byte[4096];
+            //    Stream stream = zf.GetInputStream(item);
+            string fullZipToPath = null;
+                if (fileName.Contains(".sqlite"))
                 {
                     fullZipToPath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), fileName);
                 }
-                else
-                {
-                    if(fileName.Contains('/'))
-                        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(null).Path + "/" + fileName;
-                    else
-                        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).Path + "/" + fileName;
-                }
+                //else
+                //{
+                //    if(fileName.Contains('/'))
+                //        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(null).Path + "/" + fileName;
+                //    else
+                //        fullZipToPath = CrossCurrentActivity.Current.AppContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).Path + "/" + fileName;
+                //}
                 string directoryName = Path.GetDirectoryName(fullZipToPath);
                 if (directoryName.Length > 0 && !Directory.Exists(directoryName))
                     Directory.CreateDirectory(directoryName);
                 using (FileStream streamWriter = File.Create(fullZipToPath))
                 {
-                    StreamUtils.Copy(stream, streamWriter, buffer);
+                    StreamUtils.Copy(fileStream, streamWriter, buffer);
                 }
-            }
+            //}
             return true;
             //}
             //else

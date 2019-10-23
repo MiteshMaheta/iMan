@@ -12,29 +12,29 @@ namespace iMan.Pages.ViewModels
     {
         public ItemPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
         {
-            Xamarin.Forms.MessagingCenter.Subscribe<Item>(this, "added", OnItemAdded);
+            MessagingCenter.Subscribe<Item>(this, "added", OnItemAdded);
             AddCommand = new DelegateCommand(AddItem);
             DeleteCommandWithObject = new DelegateCommand<object>(deleteItem);
         }
 
         #region Properties
-        private ObservableCollection<Item> itemsList;
+        private ObservableCollection<Item> TempItemsList;
         public ObservableCollection<Item> ItemsList
         {
-            get { return itemsList; }
-            set { SetProperty(ref itemsList, value); }
+            get { return TempItemsList; }
+            set { SetProperty(ref TempItemsList, value); }
         }
 
-        private Item item;
+        private Item TempItem;
         public Item Item
         {
-            get { return item; }
+            get { return TempItem; }
             set
             {
-                SetProperty(ref item, value);
-                if (item != null)
+                SetProperty(ref TempItem, value);
+                if (TempItem != null)
                 {
-                    GoToEditPage(item);
+                    GoToEditPage(TempItem);
                 }
             }
         }
@@ -68,6 +68,7 @@ namespace iMan.Pages.ViewModels
         {
             NavigationParameters parameters = new NavigationParameters();
             parameters.Add("item", itemObject);
+            parameters.Add("Category", category);
             await NavigationService.NavigateAsync("ItemEditPage", parameters);
         }
 
@@ -94,11 +95,11 @@ namespace iMan.Pages.ViewModels
             if (parameters.ContainsKey("category"))
             {
                 category = parameters["category"] as Category;
-                if (category != null && !string.IsNullOrEmpty(category.Id))
-                {
-                    Title = category.Name;
-                    GetAllItems(category.Id);
-                }
+            }
+            if (category != null && !string.IsNullOrEmpty(category.Id))
+            {
+                Title = category.Name;
+                GetAllItems(category.Id);
             }
         }
     }

@@ -16,56 +16,59 @@ namespace iMan.Pages.ViewModels
 {
     public class ProductAddPageViewModel : ViewModelBase
     {
-        public ProductAddPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
-        {
-            OnImageTapped = new DelegateCommand(OpenViewer);
-            AddNewItem = new DelegateCommand(AddItem);
-            AddTotalCommand = new DelegateCommand<object>(AddTotal);
-            RemoveItemCommand = new DelegateCommand<ItemUsed>(RemoveItem);
-            //ShareImage = new DelegateCommand(Share);
-            Image = "addimage.png";
-            Product = new Product();
-            UnitList = ConstantData.UnitList;
-            SaveCommand = new DelegateCommand(SaveProduct);
-            Width = Hieght = 30;
-            IsFull = false;
-        }
-
-        #region Poperties
         public DelegateCommand OnImageTapped { get; set; }
         public DelegateCommand AddNewItem { get; set; }
         public DelegateCommand<object> AddTotalCommand { get; set; }
         public DelegateCommand<ItemUsed> RemoveItemCommand { get; set; }
         public DelegateCommand ShareImage { get; set; }
+        public DelegateCommand ToggleRecentProductCommand { get; set; }
 
-        private ImageSource image;
+        public ProductAddPageViewModel(INavigationService navigationService, IPageDialogService dialogService) : base(navigationService, dialogService)
+        {
+            Xamarin.Forms.MessagingCenter.Subscribe<Product>(this, "added", OnProductAdded);
+
+            OnImageTapped = new DelegateCommand(OpenViewer);
+            AddNewItem = new DelegateCommand(AddItem);
+            AddTotalCommand = new DelegateCommand<object>(AddTotal);
+            RemoveItemCommand = new DelegateCommand<ItemUsed>(RemoveItem);
+
+            ToggleRecentProductCommand = new DelegateCommand(toggleItemList);
+
+            setNewProduct();
+            UnitList = ConstantData.UnitList;
+            SaveCommand = new DelegateCommand(SaveProduct);
+            IsFull = false;
+        }
+
+        #region Poperties
+
+        private ImageSource TempImage;
         public ImageSource Image
         {
-            get { return image; }
-            set { SetProperty(ref image, value); }
+            get { return TempImage; }
+            set { SetProperty(ref TempImage, value); }
         }
 
-        private Product product;
+        private Product TempProduct;
         public Product Product
         {
-            get { return product; }
-            set { SetProperty(ref product, value); }
+            get { return TempProduct; }
+            set { SetProperty(ref TempProduct, value); }
         }
 
-        private List<string> unitList;
+        private List<string> TempUnitList;
         public List<string> UnitList
         {
-            get { return unitList; }
-            set { SetProperty(ref unitList, value); }
+            get { return TempUnitList; }
+            set { SetProperty(ref TempUnitList, value); }
         }
 
-        private List<Item> itemList;
+        private List<Item> TempItemList;
         public static Action<string, string> Success { get; set; }
-
         public List<Item> ItemList
         {
-            get { return itemList; }
-            set { SetProperty(ref itemList, value); }
+            get { return TempItemList; }
+            set { SetProperty(ref TempItemList, value); }
         }
 
         private List<Category> TempCategoryList;
@@ -83,21 +86,8 @@ namespace iMan.Pages.ViewModels
             {
                 SetProperty(ref TempSelectedCategory, value);
                 OnCategoryChanged(TempSelectedCategory);
+                getAllProducts();
             }
-        }
-
-        private int width;
-        public int Width
-        {
-            get { return width; }
-            set { SetProperty(ref width, value); }
-        }
-
-        private int hieght;
-        public int Hieght
-        {
-            get { return hieght; }
-            set { SetProperty(ref hieght, value); }
         }
 
         private bool isFull;
@@ -105,6 +95,20 @@ namespace iMan.Pages.ViewModels
         {
             get { return isFull; }
             set { SetProperty(ref isFull, value); }
+        }
+
+        private ObservableCollection<Product> TempProductsList;
+        public ObservableCollection<Product> ProductsList
+        {
+            get { return TempProductsList; }
+            set { SetProperty(ref TempProductsList, value); }
+        }
+
+        private bool TempIsVisibleItemList;
+        public bool IsVisibleItemList
+        {
+            get { return TempIsVisibleItemList; }
+            set { SetProperty(ref TempIsVisibleItemList, value); }
         }
 
         #endregion
@@ -121,14 +125,12 @@ namespace iMan.Pages.ViewModels
                 var imgFile = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
                 {
                     PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
-                    //Name = DateTime.Now.ToString(),
-                    DefaultCamera = CameraDevice.Rear
+                    DefaultCamera = CameraDevice.Rear,
                 });
                 if (imgFile == null)
                     return;
-                // create a file, overwriting any existing file  
-                Product.ImgName = imgFile.Path;
-                //Width = Hieght = 150;
+                // create a file, overwriting any existing file
+                Product.ImgName = imgFile.Path.Split('/')?.LastOrDefault();
                 Image = $"{imgFile.Path}";
                 Xamarin.Forms.DependencyService.Get<IImageCropHelper>().ShowFromFile(imgFile.Path);
             }
@@ -142,6 +144,8 @@ namespace iMan.Pages.ViewModels
                 Xamarin.Forms.DependencyService.Get<IFileHelper>().RenameFile(oldFile, newFile);
                 Image = oldFile;
             };
+
+            await Xamarin.Forms.DependencyService.Get<IImageHelper>().ResizeImage(Product.ImgName);
         }
 
         public async void SaveProduct()
@@ -164,6 +168,7 @@ namespace iMan.Pages.ViewModels
                 await DialogService.DisplayAlertAsync("Alert", messages, "Ok");
                 return;
             }
+
             int add = await App.DbHelper.SaveProduct(Product);
             foreach (var item in Product.ItemsUsed)
             {
@@ -174,7 +179,7 @@ namespace iMan.Pages.ViewModels
                 }
             }
             Xamarin.Forms.MessagingCenter.Send<Product>(Product, "added");
-            await NavigationService.GoBackAsync();
+            setNewProduct();
 
         }
 
@@ -214,6 +219,13 @@ namespace iMan.Pages.ViewModels
             CategoryList = await App.DbHelper.GetAllCategory();
             string categoryId = parameters["categoryId"] as String;
             SelectedCategory = CategoryList.Find(e => e.Id.Equals(categoryId));
+            IsVisibleItemList = true;
+        }
+
+        public override void OnNavigatedFrom(INavigationParameters parameters)
+        {
+            //Useful when add cancels. Need to add condition to check whether product saved or not.
+            base.OnNavigatedFrom(parameters);
         }
 
         public async void OnCategoryChanged(Category category)
@@ -235,12 +247,39 @@ namespace iMan.Pages.ViewModels
             }
         }
 
+        void setNewProduct()
+        {
+            Product = new Product();
+            Image = "addimage.png";
+            IsFull = false;
+            OnCategoryChanged(SelectedCategory);
+        }
+
         void removeOldItems()
         {
             for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)
             {
                 Product.ItemsUsed.RemoveAt(i);
             }
+        }
+
+        void toggleItemList()
+        {
+            IsVisibleItemList = !IsVisibleItemList;
+        }
+
+        public void OnProductAdded(Product obj)
+        {
+            if (obj != null && SelectedCategory != null)
+            {
+                getAllProducts();
+            }
+        }
+
+        async void getAllProducts()
+        {
+            ProductsList = new ObservableCollection<Product>(await App.DbHelper.GetAllProducts(SelectedCategory.Id, 0));
+
         }
     }
 }

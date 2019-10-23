@@ -2,11 +2,11 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.SettingsPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True" Title="Settings">
-    <StackLayout>
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White"/>
-        <Button Text="View Categories" Command="{Binding ViewItem}"/>
-        <Button Text="View Parties" Command="{Binding ViewParty}"/>
-        <Button Text="Backup DB" Command="{Binding BackupDbCommand}"/>
-        <Button Text="Restore DB " Command="{Binding RestoreDbCommand}"/>
+    <StackLayout Margin="10">
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="Accent"/>
+        <Button Text="View Categories" Command="{Binding ViewItem}" BackgroundColor="Accent" TextColor="White"/>
+        <Button Text="View Parties" Command="{Binding ViewParty}" BackgroundColor="Accent" TextColor="White"/>
+        <Button Text="Backup DB" Command="{Binding BackupDbCommand}" BackgroundColor="Accent" TextColor="White"/>
+        <Button Text="Restore DB " Command="{Binding RestoreDbCommand}" BackgroundColor="Accent" TextColor="White"/>
     </StackLayout>
 </ContentPage>

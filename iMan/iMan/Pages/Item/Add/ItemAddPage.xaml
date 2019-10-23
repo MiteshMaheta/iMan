@@ -5,26 +5,49 @@
              xmlns:behaviour="clr-namespace:iMan.CustomControls.Behaviours"
              x:Name="itemAdd" Title="Add Item">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Save" Command="{Binding SaveCommand}"/>
+        <ToolbarItem Text="Save" Command="{Binding SaveCommandWithObject}" CommandParameter="{x:Reference itemName}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout>
-            <StackLayout BindingContext="{Binding Item}" Margin="10,10,0,0">
-                <Label Text="Name"/>
-                <Entry x:Name="itemName" Text="{Binding Name}" ReturnType="Next">
+        <AbsoluteLayout>
+            <StackLayout BindingContext="{Binding Item,Mode=TwoWay}" Margin="5,0,0,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+                <Label Text="{Binding BindingContext.ParentCategory.Name, Source={x:Reference Name=itemAdd}}" FontAttributes="Bold" HorizontalOptions="StartAndExpand" FontSize="Medium" />
+                <Entry x:Name="itemName" Text="{Binding Name}" Placeholder="Item Name" ReturnType="Next" IsSpellCheckEnabled="False">
                     <Entry.Behaviors>
                         <behaviour:NextEntryBehavior NextEntry="{x:Reference rateEntry}" />
                     </Entry.Behaviors>
                 </Entry>
-                <Label Text="Rate"/>
-                <Entry x:Name="rateEntry" Text="{Binding Rate}" Keyboard="Numeric" ReturnType="Next">
+                <Entry x:Name="rateEntry" Text="{Binding Rate}" Placeholder="Rate" Keyboard="Numeric" ReturnType="Next">
                     <Entry.Behaviors>
                         <behaviour:NextEntryBehavior NextEntry="{x:Reference unitPicker}" />
                     </Entry.Behaviors>
                 </Entry>
-                <Label Text="Unit"/>
-                <Picker x:Name="unitPicker" ItemsSource="{Binding BindingContext.UnitList,Source={x:Reference Name=itemAdd}}" SelectedItem="{Binding Unit}" />
+                <Picker x:Name="unitPicker" Title="Unit" ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=itemAdd}}" SelectedItem="{Binding Unit}" />
             </StackLayout>
-        </StackLayout>
+            <StackLayout AbsoluteLayout.LayoutBounds="1,0,0.25,40"
+                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" Padding="0" Margin="0" Spacing="0">
+                <Button  Text="Items"
+                         HorizontalOptions="FillAndExpand"
+                         FontSize="Micro" TextColor="White" BackgroundColor="Accent" HeightRequest="40" Command="{Binding ToggleRecentItemCommand}" />
+            </StackLayout>
+            <StackLayout IsVisible="{Binding BindingContext.IsVisibleItemList, Source={x:Reference Name=itemAdd}}"
+                         Opacity="0.8"
+                         BackgroundColor="Black"
+                         AbsoluteLayout.LayoutBounds="1,40,0.25,0.9"
+                         AbsoluteLayout.LayoutFlags="XProportional,SizeProportional">        
+                <ListView ItemsSource="{Binding ItemsList}" HasUnevenRows="True" SelectionMode="None" SeparatorColor="Accent">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout BindingContext="{Binding .}" Orientation="Vertical" Padding="0" Margin="5,0,5,5" Spacing="0">
+                                <Label Text="{Binding Name}" FontSize="Caption" TextColor="White" />
+                                <Label Text="{Binding Rate,StringFormat='{0:c}'}" FontSize="Micro" TextColor="AntiqueWhite" HorizontalOptions="StartAndExpand"/>
+                                <Label Text="{Binding Unit}" FontSize="Micro" TextColor="AntiqueWhite" HorizontalOptions="EndAndExpand"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

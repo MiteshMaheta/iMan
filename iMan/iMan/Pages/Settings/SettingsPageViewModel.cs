@@ -1,15 +1,12 @@
 ﻿using System;
-using iMan.Pages.ViewModels;
 using Prism.Navigation;
 using Prism.Services;
 using Prism.Commands;
 using iMan.Data;
 using iMan.Helpers;
 using Plugin.FilePicker.Abstractions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using iMan.Pages.ViewModels;
-using System.IO;
+using System.Collections.Generic;
 
 namespace iMan.Pages.ViewModels
 {
@@ -27,7 +24,7 @@ namespace iMan.Pages.ViewModels
 
         public void OnAuthFailed(ActivityResult obj)
         {
-            NavigationService.NavigateAsync("app:///AppMasterPage/NavigationPage/MainPage");
+            NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
         }
 
         public DelegateCommand ViewItem { get; set; }
@@ -75,7 +72,7 @@ namespace iMan.Pages.ViewModels
                 FileData file = null;
                 try
                 {
-                    file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile(new string[] { "application/zip" });
+                    file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
                 }
                 catch (Exception ex)
                 {
@@ -83,29 +80,19 @@ namespace iMan.Pages.ViewModels
                 }
                 if (file == null)
                     return;
-                //await Task.Delay(500);
-                IsBusy = true;
-                byte[] buffer = new byte[4096];
-                byte[] dataArray;
-                //using (MemoryStream ms = new MemoryStream(4096))
-                //{
-                //using (Stream s = file.GetStream())
-                //{
-                //await s.CopyToAsync(ms,4096,);
-                //}
-                //dataArray = ms.ToArray();
-                //}
-                //MemoryStream ms = new MemoryStream();
 
-                //file.DataArray.CopyTo(dataArray, 0);
-                Stream s = file.GetStream();
-                UnZipDb(s);
+                IsBusy = true;
+                List<byte> dataArray = new List<byte>(file.DataArray);
+                await UnZipDb(dataArray,file.FileName);
+
+                //Stream s = file.GetStream();
+                //UnZipDb(s);
             }
         }
 
-        public async Task UnZipDb(Stream dataArray)
+        public async Task UnZipDb(List<byte> dataArray,string fileName)
         {
-            bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray);
+            bool restore = await Xamarin.Forms.DependencyService.Get<IFileHelper>().UnzipDb(dataArray.ToArray(), fileName);
             IsBusy = false;
             if (restore)
             {
@@ -120,12 +107,8 @@ namespace iMan.Pages.ViewModels
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
             base.OnNavigatedTo(parameters);
-        }
-
-        public override void OnNavigatingTo(INavigationParameters parameters)
-        {
-            base.OnNavigatingTo(parameters);
-            Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(0);
+            if (parameters.GetNavigationMode().Equals(NavigationMode.New))
+                Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(0);
         }
     }
 }

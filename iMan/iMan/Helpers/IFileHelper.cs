@@ -13,7 +13,7 @@ namespace iMan.Helpers
         bool DeleteFile(string fileName);
         bool RenameFile(string oldFilename, string newFileName);
         Task<bool> SaveZipToFolder();
-        Task<bool> UnzipDb(Stream zipFile);
+        Task<bool> UnzipDb(byte[] zipFile,string fileName);
         //Task AskPermission();
     }
 }

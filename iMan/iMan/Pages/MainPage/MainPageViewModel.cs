@@ -29,6 +29,8 @@ namespace iMan.Pages.ViewModels
         {
             if (string.IsNullOrEmpty(SearchText))
                 SearchProduct(false);
+            else
+                SearchProduct(false);
         }
 
         #region Property
@@ -41,17 +43,17 @@ namespace iMan.Pages.ViewModels
             set { SetProperty(ref productsList, value); }
         }
         bool hasMore;
-        private Product selectedProduct;
+        private Product TempSelectedProduct;
         public Product SelectedProduct
         {
-            get { return selectedProduct; }
+            get { return TempSelectedProduct; }
             set
             {
-                SetProperty(ref selectedProduct, value);
-                if (selectedProduct != null)
+                SetProperty(ref TempSelectedProduct, value);
+                if (TempSelectedProduct != null)
                 {
                     NavigationParameters parameter = new NavigationParameters();
-                    parameter.Add("Product", selectedProduct);
+                    parameter.Add("Product", TempSelectedProduct);
                     NavigationService.NavigateAsync("ProductDetailPage", parameter);
                 }
             }
@@ -102,7 +104,7 @@ namespace iMan.Pages.ViewModels
             set
             {
                 SetProperty(ref searchText, value);
-                if (string.IsNullOrEmpty(searchText) && tempList != null && tempList.Count > 0)
+                if (!string.IsNullOrEmpty(searchText) && tempList != null && tempList.Count > 0)
                 {
                     SearchProduct();
                 }
@@ -138,15 +140,9 @@ namespace iMan.Pages.ViewModels
                     List<Product> temp = ProductsList.ToList();
                     if (Categories != null && Categories.Count > 0)
                     {
-                        string imgPath = Xamarin.Forms.DependencyService.Get<IImageHelper>().GetCompressImagePath();
                         List<Product> list = await App.DbHelper.GetAllProducts(CategoryIds?[Position.Value], ProductsList.Count);
                         if (list.Count == 0)
                             hasMore = false;
-                        list.ForEach((Product p) =>
-                        {
-                            if (!string.IsNullOrEmpty(p.ImgName) && p.ImgName.Split('/').Count() == 1)
-                                p.ImgName = imgPath + "/" + p.ImgName;
-                        });
                         temp.AddRange(list);
                         temp = temp.Distinct().ToList();
                         tempList = temp;
@@ -193,19 +189,28 @@ namespace iMan.Pages.ViewModels
             try
             {
                 base.OnNavigatedTo(parameters);
-                List<Category> category = await GetAllCategories();
-                if (category != null && category.Count > 0)
+                if (parameters.GetNavigationMode().Equals(NavigationMode.Back))
                 {
-                    Categories = category.Select(e => e.Name).ToList();
-                    CategoryIds = category.Select(e => e.Id).ToList();
+                    SelectedProduct = null;
                 }
                 else
                 {
-                    Categories = new List<string>();
-                    CategoryIds = new List<string>();
-                }
+                    List<Category> category = await GetAllCategories();
+                    if (category != null && category.Count > 0)
+                    {
+                        Categories = category.Select(e => e.Name).ToList();
+                        CategoryIds = category.Select(e => e.Id).ToList();
+                    }
+                    else
+                    {
+                        Categories = new List<string>();
+                        CategoryIds = new List<string>();
+                    }
 
-                Position = 0;
+                    Position = 0;
+                }
+                
+                
             }
             catch (Exception ex)
             {

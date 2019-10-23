@@ -67,6 +67,7 @@ namespace iMan
             containerRegistry.RegisterForNavigation<PartyAddPage>();
 
             containerRegistry.RegisterForNavigation<SettingsPage>();
+            containerRegistry.RegisterForNavigation<UpgradePage>();
         }
 
         protected override void OnSleep()

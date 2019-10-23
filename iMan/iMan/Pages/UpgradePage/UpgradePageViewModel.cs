@@ -6,6 +6,7 @@ using Prism.Navigation;
 using Prism.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace iMan.Pages.ViewModels
@@ -38,7 +39,7 @@ namespace iMan.Pages.ViewModels
         public async void GoToHome()
         {
             await App.DbHelper.SaveInfo<string>("imageCompress", bool.TrueString);
-            await NavigationService.NavigateAsync("//MasterPage/NavigationPage/MainPage");
+            await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
         }
 
         public async void ImageCompress()
@@ -47,11 +48,10 @@ namespace iMan.Pages.ViewModels
             List<Product> products = await App.DbHelper.GetAllProducts();
             foreach (Product item in products)
             {
-                if(item!=null &&!string.IsNullOrEmpty(item.ImgName))
+                if(item!=null && !string.IsNullOrEmpty(item.ImgName) && !File.Exists(item.CompressImgSource))
                 {
                     string imgName = item.ImgName.Split('/')?.LastOrDefault();
-                    item.ImgName = await Xamarin.Forms.DependencyService.Get<IImageHelper>().ResizeImage(imgName);
-                    await App.DbHelper.SaveProduct(item);
+                    await Xamarin.Forms.DependencyService.Get<IImageHelper>().ResizeImage(imgName);
                 }
             }
             UpdateText = "Please press on 'Next' button to continue";

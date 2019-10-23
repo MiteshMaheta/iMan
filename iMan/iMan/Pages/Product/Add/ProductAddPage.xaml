@@ -2,19 +2,20 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.ProductAddPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:Behaviour="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True" x:Name="pieceAdd" Title="Add Product">
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms" x:Name="AddPage" Title="Add Product">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Save" Command="{Binding SaveCommand}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
             <StackLayout BindingContext="{Binding Product}" Margin="5,0,5,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand">
-                <Picker FontAttributes="Bold" Title="Category" ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding BindingContext.CategoryList,Source={x:Reference Name=pieceAdd}}"
-                        SelectedItem="{Binding BindingContext.SelectedCategory,Source={x:Reference Name=pieceAdd}}" FontSize="Medium" HorizontalOptions="FillAndExpand"/>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Image Source="{Binding BindingContext.Image,Mode=TwoWay,Source={x:Reference Name=pieceAdd}}" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="50"  HeightRequest="50">
+                <Picker FontAttributes="Bold" Title="Category" ItemDisplayBinding="{Binding Name}" ItemsSource="{Binding BindingContext.CategoryList,Source={x:Reference Name=AddPage}}"
+                        SelectedItem="{Binding BindingContext.SelectedCategory,Source={x:Reference Name=AddPage}}" FontSize="Medium" HorizontalOptions="FillAndExpand"/>
+                <StackLayout Orientation="Horizontal">
+                    <Image Source="{Binding BindingContext.Image,Mode=TwoWay,Source={x:Reference Name=AddPage}}" HorizontalOptions="Start" VerticalOptions="Center" WidthRequest="55"  HeightRequest="55" BackgroundColor="LightGray">
                         <Image.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=pieceAdd}}"/>
+                            <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=AddPage}}"/>
                         </Image.GestureRecognizers>
                     </Image>
                     <Entry Margin="10,0,0,0" Text="{Binding Name}" Placeholder="Name" HorizontalOptions="FillAndExpand" x:Name="itemName"/>
@@ -22,10 +23,10 @@
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                     <Label Text="% Profit: " VerticalTextAlignment="Center"/>
                     <Entry Text="{Binding ProfitPercent}" Keyboard="Numeric" WidthRequest="100"/>
-                    <Button Text="+" Command="{Binding Path=BindingContext.AddNewItem ,Source={x:Reference Name=pieceAdd}}" FontSize="Large" HorizontalOptions="EndAndExpand"/>
+                    <Button Text="+" Command="{Binding Path=BindingContext.AddNewItem ,Source={x:Reference Name=AddPage}}" FontSize="Large" HorizontalOptions="EndAndExpand"/>
                 </StackLayout>
                 <StackLayout>
-                    <ListView ItemsSource="{Binding ItemsUsed}" HasUnevenRows="True" SelectedItem="null">
+                    <ListView ItemsSource="{Binding ItemsUsed}" HasUnevenRows="True" SelectedItem="null" SelectionMode="None">
                         <ListView.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -57,17 +58,17 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="50"/>
                                         </Grid.RowDefinitions>
-                                        <Picker ItemsSource="{Binding BindingContext.ItemList, Source={x:Reference Name=pieceAdd}}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding ItemSelected}"/>
-                                        <Entry Text="{Binding Quantity}" Keyboard="Numeric" Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="FillAndExpand"/>
-                                        <Picker ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=pieceAdd}}" SelectedItem="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Column="2" Margin="10,0,0,0"/>
+                                        <Picker ItemsSource="{Binding BindingContext.ItemList, Source={x:Reference Name=AddPage}}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding ItemSelected}"/>
+                                        <Entry Text="{Binding Quantity,Mode=TwoWay}" Keyboard="Numeric" Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="FillAndExpand"/>
+                                        <Picker ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=AddPage}}" SelectedItem="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Column="2" Margin="10,0,0,0"/>
                                         <Entry Text="{Binding Total}" Grid.Column="3" HorizontalOptions="FillAndExpand" IsEnabled="False">
                                             <Entry.Behaviors>
-                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=pieceAdd}}" EventName="TextChanged" CommandParameter="NewTextValue"/>
+                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=AddPage}}" EventName="TextChanged" CommandParameter="NewTextValue"/>
                                             </Entry.Behaviors>
                                         </Entry>
                                         <Image Source="remove.png" Grid.Column="4" WidthRequest="20" BackgroundColor="#2196F3" >
                                             <Image.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding BindingContext.RemoveItemCommand, Source={x:Reference Name=pieceAdd}}" CommandParameter="{Binding .}"/>
+                                                <TapGestureRecognizer Command="{Binding BindingContext.RemoveItemCommand, Source={x:Reference Name=AddPage}}" CommandParameter="{Binding .}"/>
                                             </Image.GestureRecognizers>
                                         </Image>
                                     </Grid>
@@ -76,20 +77,49 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </StackLayout>
-                <StackLayout Orientation="Horizontal" Margin="10,0,10,0" HorizontalOptions="EndAndExpand">
-                    <Label Text="Total Cost: "/>
-                    <Label Text="{Binding CostPrice}"/>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0,10,0,10">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand" Margin="0,0,5,0">
+                     <Label Text="Selling Price: "/>
+                     <Label Text="{Binding SellingPrice}" FontAttributes="Bold"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal"  HorizontalOptions="End">
+                     <Label Text="Total Cost: "/>
+                     <Label Text="{Binding CostPrice}" FontAttributes="Bold"/>
+                    </StackLayout>
                 </StackLayout>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Selling Price: "/>
-                    <Label Text="{Binding SellingPrice}" WidthRequest="50" Margin="0,0,0,5"/>
-                </StackLayout>
+                
             </StackLayout>
-            <Image Source="{Binding Image}" IsVisible="{Binding BindingContext.IsFull,Source={x:Reference Name=pieceAdd}}" Aspect="AspectFit" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1" AbsoluteLayout.LayoutFlags="PositionProportional">
+            <Image Source="{Binding Image}" IsVisible="{Binding BindingContext.IsFull,Source={x:Reference Name=AddPage}}" Aspect="AspectFit" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1" AbsoluteLayout.LayoutFlags="PositionProportional">
                 <Image.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=pieceAdd}}"/>
+                    <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=AddPage}}"/>
                 </Image.GestureRecognizers>
             </Image>
+            <StackLayout AbsoluteLayout.LayoutBounds="1,0,0.25,40"
+                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" Padding="0" Margin="0" Spacing="0" >
+                <Button  Text="Products" HorizontalOptions="FillAndExpand" FontSize="Micro" TextColor="White" BackgroundColor="Accent" HeightRequest="40" Command="{Binding ToggleRecentProductCommand}" />
+            </StackLayout>
+            <StackLayout IsVisible="{Binding BindingContext.IsVisibleItemList, Source={x:Reference Name=AddPage}}"
+                         Opacity="0.8"
+                         BackgroundColor="Black"
+                         AbsoluteLayout.LayoutBounds="1,40,0.25,0.9"
+                         AbsoluteLayout.LayoutFlags="XProportional,SizeProportional">        
+                <ListView ItemsSource="{Binding ProductsList}" HasUnevenRows="True" SelectionMode="None" SeparatorColor="Accent">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout BindingContext="{Binding .}" Orientation="Vertical" Padding="0" Margin="5,0,5,5" Spacing="0">
+                                <ff:CachedImage DownsampleHeight="40" DownsampleWidth="40" WidthRequest="40" HeightRequest="40" Source="{Binding DisplayImageSource}"/>
+                                <StackLayout Margin="0,5,0,0">
+                                    <Label Text="{Binding Name}" FontSize="Micro" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="{Binding SellingPrice,StringFormat='{0:c}'}" FontSize="Micro" TextColor="AntiqueWhite"/>
+                                </StackLayout>
+
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

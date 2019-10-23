@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
+using iMan.Helpers;
 using Newtonsoft.Json;
 using Prism.Mvvm;
 using SQLite;
@@ -25,12 +27,54 @@ namespace iMan.Data
             set { SetProperty(ref name, value); }
         }
 
-        private string imgName;
+        private string TempImgName;
         [Column("imgName")]
         public string ImgName
         {
-            get { return imgName; }
-            set { SetProperty(ref imgName, value); }
+            get { return TempImgName; }
+            set { SetProperty(ref TempImgName, value); }
+        }
+        private string TempDisplayImageSource;
+        [Ignore]
+        public string DisplayImageSource
+        {
+            get
+            {
+                if (File.Exists(CompressImgSource))
+                {
+                    return CompressImgSource;
+                }
+                else if(File.Exists(OriginalImgSource))
+                {
+                    return OriginalImgSource;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set { SetProperty(ref TempDisplayImageSource, value); }
+        }
+
+        [Ignore]
+        public string CompressImgSource
+        {
+            get {
+                string imgPath = Xamarin.Forms.DependencyService.Get<IImageHelper>().GetCompressImagePath();
+                imgPath = $"{imgPath}{ImgName}";
+                return imgPath;
+            }
+        }
+
+        [Ignore]
+        public string OriginalImgSource
+        {
+            get
+            {
+                string imgPath = Xamarin.Forms.DependencyService.Get<IImageHelper>().GetOriginalImagePath();
+                imgPath = $"{imgPath}{ImgName}";
+                return imgPath;
+            }
         }
 
         private string category;

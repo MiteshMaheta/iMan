@@ -5,8 +5,8 @@
              prism:ViewModelLocator.AutowireViewModel="True" Title="Upgrade Page"
              x:Class="iMan.Pages.Views.UpgradePage">
     <StackLayout>
-        <Label Text="Please Wait..." HorizontalOptions="CenterAndExpand"/>
-        <Label Text="{Binding UpdateText}" HorizontalOptions="CenterAndExpand"/>
+        <Label Text="Please Wait..." HorizontalOptions="CenterAndExpand" FontSize="Medium" />
+        <Label Text="{Binding UpdateText}" HorizontalOptions="CenterAndExpand" FontSize="Medium"/>
         <Button Text="Next" IsVisible="{Binding IsComplete}" Command="{Binding OnNextTap}" VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand"/>
     </StackLayout>
 </ContentPage>

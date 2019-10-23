@@ -19,8 +19,6 @@ namespace iMan.Pages.ViewModels
             RemoveItemCommand = new DelegateCommand<ItemUsed>(RemoveItem);
             UnitList = ConstantData.UnitList;
             SaveCommand = new DelegateCommand(SaveProduct);
-            CancelCommand = new DelegateCommand(Cancel);
-            Width = Hieght = 30;
             IsFull = false;
         }
 
@@ -30,57 +28,43 @@ namespace iMan.Pages.ViewModels
         public DelegateCommand<object> AddTotalCommand { get; set; }
         public DelegateCommand<ItemUsed> RemoveItemCommand { get; set; }
 
-        private Product product;
+        private Product TempProduct;
         public Product Product
         {
-            get { return product; }
-            set { SetProperty(ref product, value); }
+            get { return TempProduct; }
+            set { SetProperty(ref TempProduct, value); }
         }
 
-        private List<string> unitList;
+        private List<string> TempUnitList;
         public List<string> UnitList
         {
-            get { return unitList; }
-            set { SetProperty(ref unitList, value); }
+            get { return TempUnitList; }
+            set { SetProperty(ref TempUnitList, value); }
         }
 
-        private List<Item> itemList;
+        private List<Item> TempItemList;
         public List<Item> ItemList
         {
-            get { return itemList; }
-            set { SetProperty(ref itemList, value); }
+            get { return TempItemList; }
+            set { SetProperty(ref TempItemList, value); }
         }
 
-        private List<Category> categoryList;
+        private List<Category> TempCategoryList;
         public List<Category> CategoryList
         {
-            get { return categoryList; }
-            set { SetProperty(ref categoryList, value); }
+            get { return TempCategoryList; }
+            set { SetProperty(ref TempCategoryList, value); }
         }
 
-        private Category selectedCategory;
+        private Category TempSelectedCategory;
         public Category SelectedCategory
         {
-            get { return selectedCategory; }
+            get { return TempSelectedCategory; }
             set
             {
-                SetProperty(ref selectedCategory, value);
-                OnCategoryChanged(selectedCategory);
+                SetProperty(ref TempSelectedCategory, value);
+                OnCategoryChanged(TempSelectedCategory);
             }
-        }
-
-        private int width;
-        public int Width
-        {
-            get { return width; }
-            set { SetProperty(ref width, value); }
-        }
-
-        private int hieght;
-        public int Hieght
-        {
-            get { return hieght; }
-            set { SetProperty(ref hieght, value); }
         }
 
         private bool isFull;
@@ -96,7 +80,7 @@ namespace iMan.Pages.ViewModels
 
         public void OpenViewer()
         {
-            if (string.IsNullOrEmpty(Product.ImgName))
+            if (!string.IsNullOrEmpty(Product.ImgName))
             {
                 if (IsFull)
                     IsFull = false;
@@ -143,15 +127,6 @@ namespace iMan.Pages.ViewModels
             }
         }
 
-        public async void Cancel()
-        {
-            bool confirm = await DialogService.DisplayAlertAsync("Confirm", "Do you want to cancel?", "Yes", "No");
-            if (confirm)
-            {
-                await NavigationService.GoBackAsync();
-            }
-        }
-
         public async void AddItem()
         {
             if (!string.IsNullOrEmpty(Product.Category))
@@ -191,7 +166,6 @@ namespace iMan.Pages.ViewModels
                 Product = parameters["piece"] as Product;
                 SelectedCategory = CategoryList.FirstOrDefault(e => e.Id.Equals(Product.Category));
                 ItemList = new List<Item>(await App.DbHelper.GetAllItems(SelectedCategory.Id));
-                /*Product.ItemsUsed = JsonConvert.DeserializeObject<ObservableCollection<ItemUsed>>(Product.Items);*/
                 Product.ItemsUsed = new ObservableCollection<ItemUsed>(await App.DbHelper.GetAllItemUsed(Product.Id));
                 foreach (ItemUsed item in Product.ItemsUsed)
                 {
@@ -203,10 +177,10 @@ namespace iMan.Pages.ViewModels
 
         public async void OnCategoryChanged(Category category)
         {
-            if (category != null && Product.Category != category.Name)
+            if (category != null && Product.Category != category.Id)
             {
                 ItemList = new List<Item>(await App.DbHelper.GetAllItems(category.Id));
-                Product.Category = category.Name;
+                Product.Category = category.Id;
                 if (ItemList != null && ItemList.Count > 0)
                 {
                     removeOldItems();
@@ -220,6 +194,7 @@ namespace iMan.Pages.ViewModels
                 else removeOldItems();
             }
         }
+
         void removeOldItems()
         {
             for (int i = Product.ItemsUsed.Count - 1; i >= 0; i--)

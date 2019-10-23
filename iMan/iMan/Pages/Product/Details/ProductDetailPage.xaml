@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="iMan.Pages.Views.ProductDetailPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True" x:Name="details" Title="Product Detail">
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             x:Name="details" Title="Product Detail">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Share" Command="{Binding ShareImage}"/>
         <ToolbarItem Text="Edit" Command="{Binding EditProduct}"/>
@@ -9,82 +11,69 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <AbsoluteLayout HorizontalOptions="FillAndExpand">
-            <!--<ScrollView>-->
-            <StackLayout BindingContext="{Binding Product}" Margin="10,30,10,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
-                <Image Source="{Binding ImgName}" HorizontalOptions="Center" WidthRequest="30"  HeightRequest="30">
-                    <Image.GestureRecognizers>
+            <StackLayout BindingContext="{Binding Product}" Margin="10,5,10,0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+                <ff:CachedImage DownsampleHeight="60" DownsampleWidth="60" WidthRequest="60" HeightRequest="60" Source="{Binding DisplayImageSource}" HorizontalOptions="Center">
+                    <ff:CachedImage.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=details}}"/>
-                    </Image.GestureRecognizers>
-                </Image>
+                    </ff:CachedImage.GestureRecognizers>
+                    </ff:CachedImage>
+                <!--<Image Source="{Binding DisplayImageSource}" HorizontalOptions="Center" WidthRequest="60"  HeightRequest="60">
+                    
+                </Image>-->
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Name: " HeightRequest="30"/>
-                    <Label Text="{Binding Name}" HeightRequest="30" HorizontalOptions="FillAndExpand"/>
+                    <Label Text="Name: " HeightRequest="30" FontSize="Medium"/>
+                    <Label Text="{Binding Name}" HeightRequest="30" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Category: " HeightRequest="30"/>
-                    <Label Text="{Binding Category}" HeightRequest="30" HorizontalOptions="FillAndExpand"/>
+                    <Label Text="Selling Price: " HeightRequest="30" FontSize="Medium"/>
+                    <Label Text="{Binding SellingPrice,StringFormat='{0:c}'}" FontSize="Medium" FontAttributes="Bold" HeightRequest="30" HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
-                <!--<StackLayout HeightRequest="360">
-                    <ListView ItemsSource="{Binding ItemsUsed}" HasUnevenRows="True" SelectedItem="null">
-                        <ListView.Header>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"/>
-                                </Grid.RowDefinitions>
-                                <Label Text="Type" VerticalTextAlignment="Center"/>
-                                <Label Text="Quantity" Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="FillAndExpand" VerticalTextAlignment="Center"/>
-                                <Label Text="Unit" HorizontalOptions="FillAndExpand" Grid.Column="2" Margin="10,0,0,0" VerticalTextAlignment="Center"/>
-                                <Label Text="Total" Grid.Column="3" HorizontalOptions="FillAndExpand" VerticalTextAlignment="Center"/>
-                            </Grid>
-                        </ListView.Header>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <Grid BindingContext="{Binding .}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="30"/>
-                                        </Grid.RowDefinitions>
-                                        <Label Text="{Binding Type}"/>
-                                        <Label Text="{Binding Quantity}" Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="FillAndExpand"/>
-                                        <Label Text="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Column="2" Margin="10,0,0,0"/>
-                                        <Label Text="{Binding Total}" Grid.Column="3" HorizontalOptions="FillAndExpand"/>
-                                    </Grid>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackLayout>-->
-                <!--<StackLayout Orientation="Horizontal" Margin="10,0,10,0" HorizontalOptions="EndAndExpand">
-                    <Label Text="Total Cost: "/>
-                    <Label Text="{Binding CostPrice,StringFormat='{0:c}'}"/>
-                </StackLayout>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="% Profit: " VerticalTextAlignment="Center"/>
-                    <Label Text="{Binding ProfitPercent}"/>
-                </StackLayout>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <Label Text="Selling Price: "/>
-                    <Label Text="{Binding SellingPrice,StringFormat='{0:c}'}" WidthRequest="50"/>
-                </StackLayout>-->
             </StackLayout>
-            <!--</ScrollView>-->
-            <Image Source="{Binding BindingContext.Product.ImgName,Source={x:Reference Name=details}}" IsVisible="{Binding BindingContext.IsFull,Source={x:Reference Name=details}}" Aspect="AspectFit" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1" AbsoluteLayout.LayoutFlags="PositionProportional">
+            <Image Source="{Binding BindingContext.Product.OriginalImgSource,Source={x:Reference Name=details}}" IsVisible="{Binding BindingContext.IsFull,Source={x:Reference Name=details}}" Aspect="AspectFit" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1" AbsoluteLayout.LayoutFlags="PositionProportional">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding BindingContext.OnImageTapped,Source={x:Reference Name=details}}"/>
                 </Image.GestureRecognizers>
             </Image>
+            <StackLayout IsVisible="{Binding BindingContext.IsShare,Source={x:Reference Name=details}}"
+                         BackgroundColor="Transparent"
+                         AbsoluteLayout.LayoutBounds="1,0,1,1"
+                         AbsoluteLayout.LayoutFlags="All"
+                         Margin="0"
+                         Padding="0">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BindingContext.CancelCommand, Source={x:Reference Name=details}}"
+                                          NumberOfTapsRequired="1" />
+                </StackLayout.GestureRecognizers>
+            </StackLayout>
+            <Frame IsVisible="{Binding BindingContext.IsShare,Source={x:Reference Name=details}}"
+                   CornerRadius="10"
+                   BorderColor="Accent" Padding="0" IsClippedToBounds="True" Margin="20,50,20,0">
+                <StackLayout>
+                    <StackLayout BackgroundColor="Accent">
+                        <Label Text="Share Caption"
+                               HorizontalOptions="CenterAndExpand"
+                               FontSize="Title"
+                               FontAttributes="Bold" TextColor="White" />
+                    </StackLayout>
+                    <StackLayout VerticalOptions="CenterAndExpand" Padding="5,0,5,0">
+                        <Editor Placeholder="Enter the text to share"
+                               Text="{Binding ShareCaptionText}" FontSize="Medium" HeightRequest="80" />
+                        <Grid ColumnSpacing="8"
+                              VerticalOptions="EndAndExpand" Margin="0,0,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Text="Cancel"
+                                    Command="{Binding CancelCommand}"
+                                    Grid.Column="0" FontSize="Large" />
+                            <Button Text="Share"
+                                    Command="{Binding ShareCommand}"
+                                    Grid.Column="1" FontSize="Large"/>
+                        </Grid>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

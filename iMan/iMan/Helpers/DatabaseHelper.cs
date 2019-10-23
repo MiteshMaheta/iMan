@@ -190,11 +190,15 @@ namespace iMan.Helpers
             return -1;
         }
 
-        public async Task<List<Item>> GetAllItems( string category )
+        public async Task<List<Item>> GetAllItems( string category, bool isAscending = true)
         {
             if (App.Connection != null)
             {
                 string query = $"select * from item where categoryId = '{category}'";
+                if (!isAscending)
+                {
+                    query += " order by id desc ";
+                }
                 try
                 {
                     List<Item> items = await App.Connection.QueryAsync<Item>(query);
@@ -277,6 +281,8 @@ namespace iMan.Helpers
                 List<string> productIds = new List<string>();
                 foreach (var product in productList)
                 {
+                    Xamarin.Forms.DependencyService.Get<IFileHelper>().DeleteFile(product.OriginalImgSource);
+                    Xamarin.Forms.DependencyService.Get<IFileHelper>().DeleteFile(product.CompressImgSource);
                     productIds.Add(product.Id);
                 }
                 

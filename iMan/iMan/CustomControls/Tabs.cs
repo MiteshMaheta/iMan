@@ -45,7 +45,7 @@ namespace iMan.CustomControls
                 tab.Children.Add(scroll);
                 foreach (string item in tabs)
                 {
-                    Button button = new Button() { Text = item, HorizontalOptions = LayoutOptions.FillAndExpand, FontSize = Device.GetNamedSize(NamedSize.Medium,typeof(Button)), HeightRequest = 40, BackgroundColor = Color.Transparent};
+                    Button button = new Button() { Text = item, HorizontalOptions = LayoutOptions.FillAndExpand, FontSize = Device.GetNamedSize(NamedSize.Small,typeof(Button)), HeightRequest = 40, BackgroundColor = Color.Transparent};
 
                     button.Pressed += (sender, e) =>
                          {

@@ -18,19 +18,20 @@ namespace iMan.Pages.ViewModels
         
         public async override void OnNavigatedTo(INavigationParameters parameters)
         {
-            await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
 
-            //bool result = await setOrUpgradeDatabaseAndKey();
-            //await Task.Delay(3000);
-            //if (result)
-            //{
-            //    Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
-            //    Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
-            //}
-            //else
-            //{
-            //    await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
-            //}
+            //await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+
+            bool result = await setOrUpgradeDatabaseAndKey();
+            await Task.Delay(3000);
+            if (result)
+            {
+                Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
+                Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
+            }
+            else
+            {
+                await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
+            }
         }
 
         async Task<bool> setOrUpgradeDatabaseAndKey()

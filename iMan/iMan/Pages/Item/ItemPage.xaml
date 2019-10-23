@@ -30,13 +30,10 @@
                             </ViewCell.ContextActions>
                             <StackLayout BindingContext="{Binding .}"
                                          Margin="10">
-                                <Label Text="{Binding Name}"
-                                       HorizontalOptions="StartAndExpand" />
+                                <Label Text="{Binding Name}" HorizontalOptions="StartAndExpand" />
                                 <StackLayout Orientation="Horizontal">
-                                    <Label Text="{Binding Rate,StringFormat='{0:c}'}"
-                                           HorizontalOptions="StartAndExpand" />
-                                    <Label Text="{Binding Unit,Mode=TwoWay}"
-                                           HorizontalOptions="End" />
+                                    <Label Text="{Binding Rate,StringFormat='{0:c}'}" HorizontalOptions="StartAndExpand" />
+                                    <Label Text="{Binding Unit,Mode=TwoWay}" HorizontalOptions="End" />
                                 </StackLayout>
                             </StackLayout>
                         </ViewCell>

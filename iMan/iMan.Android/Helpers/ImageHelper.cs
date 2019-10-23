@@ -31,29 +31,36 @@ namespace iMan.Droid.Helpers
                 string environmentPath = CrossCurrentActivity.Current.AppContext.ApplicationContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).AbsolutePath;
                 if (Directory.Exists(environmentPath))
                 {
-                    Bitmap originalImage = await BitmapFactory.DecodeFileAsync(environmentPath +"/"+ imageArray);
-                    //ImageSource source = null;
-                    using (System.IO.MemoryStream stream = new MemoryStream())
+
+                    Bitmap originalImage = await BitmapFactory.DecodeFileAsync(environmentPath + "/" + imageArray);
+                    if (originalImage != null)
                     {
-                        stream.Position = 0;
-                        originalImage.Compress(Bitmap.CompressFormat.Jpeg, 0, stream);
-                        byte[] byteArray = stream.GetBuffer();
-                        string path = environmentPath + "/../Compress/";
-                        if (!Directory.Exists(path))
+                        using (System.IO.MemoryStream stream = new MemoryStream())
                         {
-                            Directory.CreateDirectory(path);
-                            Java.IO.File file = new Java.IO.File(path + ".nomedia");
-                            file.CreateNewFile();
+                            stream.Position = 0;
+                            originalImage.Compress(Bitmap.CompressFormat.Jpeg, 0, stream);
+                            byte[] byteArray = stream.GetBuffer();
+                            string path = environmentPath + "/../Compress/";
+                            if (!Directory.Exists(path))
+                            {
+                                Directory.CreateDirectory(path);
+                                Java.IO.File file = new Java.IO.File(path + ".nomedia");
+                                file.CreateNewFile();
+                            }
+                            using (var newFile = new Java.IO.File(path + imageArray))
+                            {
+                                newFile.CreateNewFile();
+                                // TODO : Update visual studio and enable async method to write new file.
+                                //await System.IO.File.WriteAllBytesAsync(newFile.Path,byteArray);
+                                System.IO.File.WriteAllBytes(newFile.Path, byteArray);
+                            }
                         }
-                        using (var newFile = new Java.IO.File(path + imageArray))
-                        {
-                            newFile.CreateNewFile();
-                            // TODO : Update visual studio and enable async method to write new file.
-                            //await System.IO.File.WriteAllBytesAsync(newFile.Path,byteArray);
-                            System.IO.File.WriteAllBytes(newFile.Path, byteArray);
-                        }
+                        return imageArray;
                     }
-                    return imageArray;
+                    else
+                    {
+                        return null;
+                    }
                 }
                 return null;
             }
@@ -63,12 +70,27 @@ namespace iMan.Droid.Helpers
                 return null;
             }
         }
+
         public string GetCompressImagePath()
         {
             string environmentPath = CrossCurrentActivity.Current.AppContext.ApplicationContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).AbsolutePath;
             if (Directory.Exists(environmentPath))
             {
                 string path = environmentPath + "/../Compress/";
+                if (Directory.Exists(path))
+                {
+                    return path;
+                }
+            }
+            return null;
+        }
+
+        public string GetOriginalImagePath()
+        {
+            string environmentPath = CrossCurrentActivity.Current.AppContext.ApplicationContext.GetExternalFilesDir(Android.OS.Environment.DirectoryPictures).AbsolutePath;
+            if (Directory.Exists(environmentPath))
+            {
+                string path = environmentPath + "/";
                 if (Directory.Exists(path))
                 {
                     return path;

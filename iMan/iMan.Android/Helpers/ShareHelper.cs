@@ -29,7 +29,9 @@ namespace iMan.Droid.Helpers
             intent.PutExtra(Intent.ExtraText, text);
             intent.SetType("img/jpg");
             intent.PutExtra(Intent.ExtraStream, Android.Net.Uri.FromFile(new Java.IO.File(imageData)));
-            Android.App.Application.Context.StartActivity(Intent.CreateChooser(intent, "Share Product"));
+            var context = MainApplication.CurrentContext;
+            context.StartActivity(Intent.CreateChooser(intent, "Share Product"));
+            //Android.App.Application.Context .StartActivity(Intent.CreateChooser(intent, "Share Product"));
         }
     }
 }

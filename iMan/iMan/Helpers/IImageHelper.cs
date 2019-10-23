@@ -11,5 +11,6 @@ namespace iMan.Helpers
     {
         Task<string> ResizeImage(string imageArray);
         string GetCompressImagePath();
+        string GetOriginalImagePath();
     }
 }
