@@ -250,7 +250,7 @@ namespace iMan.Pages.ViewModels
         void setNewProduct()
         {
             Product = new Product();
-            Image = "addimage.png";
+            //Image = "addimage.png";
             IsFull = false;
             OnCategoryChanged(SelectedCategory);
         }
