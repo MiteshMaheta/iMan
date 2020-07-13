@@ -7,6 +7,8 @@ using iMan.Helpers;
 using iMan.Pages.ViewModels;
 using Prism.Navigation;
 using Prism.Services;
+using Plugin.Fingerprint;
+using Plugin.Fingerprint.Abstractions;
 
 namespace iMan.Pages.ViewModels
 {
@@ -19,19 +21,38 @@ namespace iMan.Pages.ViewModels
         public async override void OnNavigatedTo(INavigationParameters parameters)
         {
 
-            await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+            //await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
 
-            //bool result = await setOrUpgradeDatabaseAndKey();
-            //await Task.Delay(3000);
-            //if (result)
-            //{
-            //    Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
-            //    Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
-            //}
-            //else
-            //{
-            //    await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
-            //}
+            bool result = await setOrUpgradeDatabaseAndKey();
+            await Task.Delay(3000);
+            if (result)
+            {
+                var fingerPrintAvailable = await CrossFingerprint.Current.IsAvailableAsync(true);
+                if (fingerPrintAvailable)
+                {
+                    var request = new AuthenticationRequestConfiguration("Authentication", "Authentication to proceed");
+                    var auth = await CrossFingerprint.Current.AuthenticateAsync(request);
+                    if (auth.Authenticated)
+                    {
+                        await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+                    }
+                    else
+                    {
+                        await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+                    }
+                }
+                else
+                {
+                    await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+                }
+                //Xamarin.Forms.DependencyService.Get<IAuthHelper>().Authenticate(1);
+                //Xamarin.Forms.MessagingCenter.Subscribe<ActivityResult>(this, "success", Navigate);
+                //await NavigationService.NavigateAsync("//AppMasterPage/NavigationPage/MainPage");
+            }
+            else
+            {
+                await DialogService.DisplayAlertAsync("Error", "DB Setting failed. Try again.", "Ok");
+            }
         }
 
         async Task<bool> setOrUpgradeDatabaseAndKey()

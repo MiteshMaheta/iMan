@@ -49,26 +49,28 @@
                                 <ViewCell>
                                     <Grid BindingContext="{Binding .}">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="50"/>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <Picker ItemsSource="{Binding BindingContext.ItemList, Source={x:Reference Name=pieceEdit}}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding ItemSelected}"/>
-                                        <Entry Text="{Binding Quantity}" Keyboard="Numeric" Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="FillAndExpand"/>
-                                        <Picker ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=pieceEdit}}" SelectedItem="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Column="2" Margin="10,0,0,0"/>
-                                        <Entry Text="{Binding Total}" Grid.Column="3" HorizontalOptions="FillAndExpand" IsEnabled="False">
-                                            <Entry.Behaviors>
-                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=pieceEdit}}" EventName="TextChanged" CommandParameter="NewTextValue"/>
-                                            </Entry.Behaviors>
-                                        </Entry>
-                                        <Image Source="remove.png" Grid.Column="4" WidthRequest="20" BackgroundColor="#2196F3">
+                                        <Picker ItemsSource="{Binding BindingContext.ItemList, Source={x:Reference Name=pieceEdit}}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding ItemSelected}" />
+
+                                        <Entry Text="{Binding Quantity,Mode=TwoWay}" Grid.Column="1" Keyboard="Numeric" HorizontalOptions="FillAndExpand" />
+
+                                        <Picker ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=pieceEdit}}" SelectedItem="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Row="1" TextColor="DarkGray" />
+
+                                        <Label Text="{Binding Total,Mode=TwoWay}" Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="End">
+                                            <Label.Behaviors>
+                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=pieceEdit}}" EventName="PropertyChanged" CommandParameter="NewTextValue"/>
+                                            </Label.Behaviors>
+                                        </Label>
+                                        <Image Source="remove.png" Grid.RowSpan="2" Grid.Column="2" WidthRequest="20" BackgroundColor="#2196F3">
                                             <Image.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding BindingContext.RemoveItemCommand, Source={x:Reference Name=pieceEdit}}" CommandParameter="{Binding .}"/>
+                                                <TapGestureRecognizer Command="{Binding BindingContext.RemoveItemCommand, Source={x:Reference Name=pieceEdit}}" CommandParameter="{Binding .}" />
                                             </Image.GestureRecognizers>
                                         </Image>
                                     </Grid>

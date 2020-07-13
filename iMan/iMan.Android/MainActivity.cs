@@ -16,6 +16,7 @@ using iMan.Pages.ViewModels;
 using Android;
 using Android.Support.V4.Content;
 using Android.Support.V4.App;
+using Plugin.Fingerprint;
 
 namespace iMan.Droid
 {
@@ -30,6 +31,7 @@ namespace iMan.Droid
             base.OnCreate(savedInstanceState);
 
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
+            CrossFingerprint.SetCurrentActivityResolver(() => CrossCurrentActivity.Current.Activity);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 

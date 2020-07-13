@@ -155,10 +155,6 @@ namespace iMan.Pages.ViewModels
             {
                 messages += "Add an Item\n";
             }
-            if (Product.ProfitPercent == 0)
-            {
-                messages += "Enter the Profit %\n";
-            }
             if (string.IsNullOrEmpty(Product.Name))
             {
                 messages += "Enter the Name of the Product";
@@ -202,15 +198,21 @@ namespace iMan.Pages.ViewModels
             Product.CostPrice = Product.ItemsUsed.Sum(e => e.Total);
         }
 
-        public void RemoveItem(ItemUsed obj)
+        public async void RemoveItem(ItemUsed obj)
         {
-            Product.ItemsUsed.Remove(obj);
-            if (Product.ItemsUsed != null && Product.ItemsUsed.Count > 0)
+            bool confirm = await DialogService.DisplayAlertAsync("Item Delete", "Do you want to Delete?", "Delete", "Cancel");
+            if (confirm)
             {
-                AddTotal(obj);
+                Product.ItemsUsed.Remove(obj);
+                if (Product.ItemsUsed != null && Product.ItemsUsed.Count > 0)
+                {
+                    AddTotal(obj);
+                }
+                else
+                    Product.CostPrice = 0;
             }
-            else
-                Product.CostPrice = 0;
+
+            
         }
 
         public async override void OnNavigatedTo(INavigationParameters parameters)

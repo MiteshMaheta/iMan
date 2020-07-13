@@ -39,9 +39,9 @@
                                         <Picker ItemsSource="{Binding BindingContext.UnitList, Source={x:Reference Name=AddPage}}" SelectedItem="{Binding Unit}" HorizontalOptions="FillAndExpand" Grid.Row="1" TextColor="DarkGray" />
 
                                         <Label Text="{Binding Total,Mode=TwoWay}" Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="End">
-                                            <!--<Entry.Behaviors>
-                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=AddPage}}" EventName="TextChanged" CommandParameter="NewTextValue"/>
-                                            </Entry.Behaviors>-->
+                                            <Label.Behaviors>
+                                                <Behaviour:EventToCommandBehavior Command="{Binding BindingContext.AddTotalCommand, Source={x:Reference Name=AddPage}}" EventName="PropertyChanged" CommandParameter="NewTextValue"/>
+                                            </Label.Behaviors>
                                         </Label>
                                         <Image Source="remove.png" Grid.RowSpan="2" Grid.Column="2" WidthRequest="20" BackgroundColor="#2196F3">
                                             <Image.GestureRecognizers>

@@ -120,6 +120,10 @@ namespace iMan.Data
                 {
                     SellingPrice = CostPrice * 100/(100-((double)profitPercent));
                 }
+                else
+                {
+                    SellingPrice = CostPrice;
+                }
             }
         }
 
